@@ -1,0 +1,65 @@
+name: "Build Official Rocket.Chat Release distributions and test configs"
+
+# TODO use repository dispatch instead
+on:
+  schedule:
+    - cron: '00 18 * * *'
+
+env:
+  TARGET_REPOSITORY: "RocketChat/Rocket.Chat"
+
+jobs:
+  pre-req:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Clone repository
+        uses: actions/checkout@v3
+        with:
+          submodules: false
+
+      # check if there is a new release in 
+      - name: Parse new release
+        id: parse-environment
+        shell: bash
+        run: |
+          # including release candidates
+          LATEST_RELEASE="$(
+            git -c 'versionsort.suffix=-' ls-remote -t --exit-code --refs --sort=-v:refname "https://github.com/$TARGET_REPOSITORY" '*' |
+              awk -F/ '$NF !~ /beta/ { print $NF; exit }'
+          )"
+          echo "::set-output name=release::$LATEST_RELEASE"
+          new_release() {
+            if [[ "$1" == "true" ]]; then echo "$1" >> .RELEASES; fi
+            echo "::set-output name=new_release::$1"
+          }
+          if ! [[ -f .RELEASES ]]; then
+            new_release true
+          else
+            curr="$(tail -1 .RELEASES)"
+            if [[ "$curr" == "$LATEST_RELEASE" ]]; then
+              new_release false
+            else
+              new_release true
+            fi
+          fi
+
+      - name: Commit .RELEASES file
+        uses: EndBug/add-and-commit@v7
+        if: steps.parse-environment.outputs.new_release == "true"
+        with:
+          add: .RELEASES
+          cwd: Release.Distributions
+          branch: main
+          message: "Chore: add new release version ${{ steps.parse-environment.outputs.release }}"
+          push: true
+          default_author: debdutdeb
+
+      - name: Schedule main workflow
+        uses: cardinalby/unschedule-job-action@v1
+        if: steps.parse-environment.outputs.new_release == "true"
+        with:
+          ghToken: ${{ secrets.GH_TOKEN }}
+          templateTmlFile: '.scheduled/build_and_release.yml'
+          jobPayload: ${{ toJSON('{"release":"'steps.parse-environment.outputs.release'"}') }}

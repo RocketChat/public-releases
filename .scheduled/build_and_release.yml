@@ -1,0 +1,9 @@
+name: "Build and release official distrubutions"
+
+on:
+  schedule:
+    - cron: "" # FIXME
+
+jobs:
+  snap:
+    runs-on: ubuntu-latest
