@@ -29,6 +29,11 @@ jobs:
           echo "release=$release" >> $GITHUB_OUTPUT
           echo "candidate=$candidate" >> $GITHUB_OUTPUT
 
+      - name: Unschedule this workflow
+        uses: cardinalby/unschedule-job-action@v1
+        with:
+          ghToken: ${{ secrets.GH_TOKEN }}
+
   snap:
     needs: [parse-payload]
     runs-on: ubuntu-latest

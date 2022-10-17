@@ -35,9 +35,6 @@ jobs:
           )"
           echo "latest_release=$latest_release" >> $GITHUB_OUTPUT
           new_release() {
-            # if there is a new release, append to releases list file
-            # and set the new_release output to true
-            if [[ "$1" == "true" ]]; then echo "$latest_release" >> .RELEASES; fi
             echo "new_release=$1" >> $GITHUB_OUTPUT
           }
           if ! [[ -f .RELEASES ]]; then # no file means first run
@@ -65,12 +62,15 @@ jobs:
         with:
           submodules: true
 
-      - name: Update submodules
-        run: git submodule foreach 'git pull --rebase'
+      - name: Update submodules and .RELEASES
+        run: |
+          git submodule foreach 'git pull --rebase'
+          echo "${{ needs.prebuild.outputs.latest_release }}" >> .RELEASES
 
       - name: Update repository with new release and build configs
         uses: EndBug/add-and-commit@v7
         with:
+          add: .
           message: "Chore: add new release version ${{ steps.parse-environment.outputs.latest_release }}"
           push: true
           authorb_name: Debdut Chakraborty
