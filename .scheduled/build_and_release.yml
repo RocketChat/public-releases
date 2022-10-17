@@ -2,13 +2,21 @@ name: "Build and release official distrubutions"
 
 on:
   schedule:
-    - cron: "*/30 * * * *"
+    - cron: "*/1 * * * *"
 
 # needed_secrets:
 #   - SNAPCRAFT_LOGIN: login credentials for snap store to be able to push the artifact
 
 jobs:
-  parse-payload:
+  unschedule:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Unschedule this workflow
+        uses: cardinalby/unschedule-job-action@v1
+        with:
+          ghToken: ${{ secrets.GH_TOKEN }}
+
+  process-payload:
     outputs:
       release: ${{ steps.parsed.outputs.release }}
       candidate: ${{ steps.parsed.outputs.candidate }}
@@ -29,22 +37,17 @@ jobs:
           echo "release=$release" >> $GITHUB_OUTPUT
           echo "candidate=$candidate" >> $GITHUB_OUTPUT
 
-      - name: Unschedule this workflow
-        uses: cardinalby/unschedule-job-action@v1
-        with:
-          ghToken: ${{ secrets.GH_TOKEN }}
-
   snap:
-    needs: [parse-payload]
+    needs: [process-payload]
     runs-on: ubuntu-latest
     env:
       TESTS_REPO: "debdutdeb/rocketchat-release-test"
     steps:
       - name: Parse environment variables
         run: |
-          release="${{ needs.parse-payload.outputs.release }}"
+          release="${{ needs.process-payload.outputs.release }}"
           snap_track="${release:0:1}.x"
-          candidate="${{ needs.parse-payload.outputs.candidate }}"
+          candidate="${{ needs.process-payload.outputs.candidate }}"
 
           echo "release: $release"
           echo "snap_track: $snap_track"
