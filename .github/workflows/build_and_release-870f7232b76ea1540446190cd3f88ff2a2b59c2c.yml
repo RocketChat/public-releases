@@ -18,6 +18,7 @@ jobs:
           payload="${{ env.DELAYED_JOB_PAYLOAD }}"
 
           echo "$payload"
+          echo "${{ env.DELAYED_JOB_PAYLOAD }}"
 
           release="$(jq -r .release <<< "$paylaod")"
           candidate="$(jq -r .candidate <<< "$payload")"
