@@ -15,10 +15,7 @@ jobs:
         run: |
           &> /dev/null command -v jq || sudo apt install jq -y
 
-          payload="${{ env.DELAYED_JOB_PAYLOAD }}"
-
-          echo "$payload"
-          echo '${{ env.DELAYED_JOB_PAYLOAD }}'
+          payload='${{ env.DELAYED_JOB_PAYLOAD }}'
 
           release="$(jq -r .release <<< "$paylaod")"
           candidate="$(jq -r .candidate <<< "$payload")"
@@ -90,6 +87,7 @@ jobs:
       - name: Remove snap
         run: sudo snap remove rocketchat-server
       - name: Publish snap to edge channel
+        if: false
         uses: snapcore/action-publish@v1
         with:
           store_login: '${{ secrets.SNAPCRAFT_LOGIN }}'
@@ -98,7 +96,7 @@ jobs:
       - name: Test snap updating
         run: ./test_scripts/snap_update_test.sh
       - name: Promote edge to candidate
-        if: env.candidate == 'true'
+        if: false
         run: >
           # TODO change this to using the environment variable
 
