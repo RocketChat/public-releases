@@ -1,0 +1,22 @@
+name: Build and release official distrubutions
+'on':
+  schedule:
+    - cron: 30 * * * *
+jobs:
+  show:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show job payload
+        run: |
+          echo ${{ env.DELAYED_JOB_PAYLOAD }}
+      - name: Remove this worflow
+        uses: cardinalby/unschedule-job-action@v1
+        with:
+          ghToken: '${{ secrets.GH_TOKEN }}'
+    env:
+      DELAYED_JOB_CHECKOUT_REF: e6816ccd6e83040500dbd74dbb6c42cb19c96e18
+      DELAYED_JOB_CHECKOUT_REF_IS_TAG: 'false'
+      DELAYED_JOB_WORKFLOW_FILE_PATH: >-
+        .github/workflows/build_and_release-e6816ccd6e83040500dbd74dbb6c42cb19c96e18.yml
+      DELAYED_JOB_WORKFLOW_UNSCHEDULE_TARGET_BRANCH: main
+      DELAYED_JOB_PAYLOAD: '"{\"release\":\"steps.parse-environment.outputs.release\"}"'
