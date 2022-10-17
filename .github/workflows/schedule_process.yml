@@ -11,6 +11,7 @@ env:
 
 jobs:
   prebuild:
+    if: false
     outputs:
       new_release: ${{ steps.parse-environment.outputs.new_release }}
       latest_release: ${{ steps.parse-environment.outputs.latest_release }}
