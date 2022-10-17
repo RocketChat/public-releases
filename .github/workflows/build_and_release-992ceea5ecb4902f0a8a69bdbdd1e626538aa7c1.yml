@@ -10,10 +10,10 @@ jobs:
         with:
           ghToken: '${{ secrets.GH_TOKEN }}'
     env:
-      DELAYED_JOB_CHECKOUT_REF: 81e8727aecb917158f71ee8337c2b5b1ffe50bc7
+      DELAYED_JOB_CHECKOUT_REF: 992ceea5ecb4902f0a8a69bdbdd1e626538aa7c1
       DELAYED_JOB_CHECKOUT_REF_IS_TAG: 'false'
       DELAYED_JOB_WORKFLOW_FILE_PATH: >-
-        .github/workflows/build_and_release-81e8727aecb917158f71ee8337c2b5b1ffe50bc7.yml
+        .github/workflows/build_and_release-992ceea5ecb4902f0a8a69bdbdd1e626538aa7c1.yml
       DELAYED_JOB_WORKFLOW_UNSCHEDULE_TARGET_BRANCH: main
       DELAYED_JOB_PAYLOAD: '{"release":"5.2.0","candidate":false}'
   process-payload:
@@ -37,10 +37,10 @@ jobs:
           echo "release=$release" >> $GITHUB_OUTPUT
           echo "candidate=$candidate" >> $GITHUB_OUTPUT
     env:
-      DELAYED_JOB_CHECKOUT_REF: 81e8727aecb917158f71ee8337c2b5b1ffe50bc7
+      DELAYED_JOB_CHECKOUT_REF: 992ceea5ecb4902f0a8a69bdbdd1e626538aa7c1
       DELAYED_JOB_CHECKOUT_REF_IS_TAG: 'false'
       DELAYED_JOB_WORKFLOW_FILE_PATH: >-
-        .github/workflows/build_and_release-81e8727aecb917158f71ee8337c2b5b1ffe50bc7.yml
+        .github/workflows/build_and_release-992ceea5ecb4902f0a8a69bdbdd1e626538aa7c1.yml
       DELAYED_JOB_WORKFLOW_UNSCHEDULE_TARGET_BRANCH: main
       DELAYED_JOB_PAYLOAD: '{"release":"5.2.0","candidate":false}'
   snap:
@@ -49,10 +49,10 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TESTS_REPO: debdutdeb/rocketchat-release-test
-      DELAYED_JOB_CHECKOUT_REF: 81e8727aecb917158f71ee8337c2b5b1ffe50bc7
+      DELAYED_JOB_CHECKOUT_REF: 992ceea5ecb4902f0a8a69bdbdd1e626538aa7c1
       DELAYED_JOB_CHECKOUT_REF_IS_TAG: 'false'
       DELAYED_JOB_WORKFLOW_FILE_PATH: >-
-        .github/workflows/build_and_release-81e8727aecb917158f71ee8337c2b5b1ffe50bc7.yml
+        .github/workflows/build_and_release-992ceea5ecb4902f0a8a69bdbdd1e626538aa7c1.yml
       DELAYED_JOB_WORKFLOW_UNSCHEDULE_TARGET_BRANCH: main
       DELAYED_JOB_PAYLOAD: '{"release":"5.2.0","candidate":false}'
     steps:
