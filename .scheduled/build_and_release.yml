@@ -1,8 +1,9 @@
 name: "Build and release official distrubutions"
 
 on:
-  schedule:
-    - cron: "*/30 * * * *"
+  # schedule:
+  #   - cron: "*/30 * * * *"
+  push:
 
 # needed_secrets:
 #   - SNAPCRAFT_LOGIN: login credentials for snap store to be able to push the artifact
@@ -20,6 +21,7 @@ jobs:
           &> /dev/null command -v jq || sudo apt install jq -y
 
           payload="${{ env.DELAYED_JOB_PAYLOAD }}"
+          echo "$payload"
 
           release="$(jq -r .release <<< "$paylaod")"
           candidate="$(jq -r .candidate <<< "$payload")"

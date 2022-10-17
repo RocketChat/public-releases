@@ -1,7 +1,8 @@
 name: Build and release official distrubutions
 'on':
-  schedule:
-    - cron: '*/30 * * * *'
+  # schedule:
+  #   - cron: '*/30 * * * *'
+  push:
 jobs:
   parse-payload:
     outputs:
@@ -15,6 +16,8 @@ jobs:
           &> /dev/null command -v jq || sudo apt install jq -y
 
           payload="${{ env.DELAYED_JOB_PAYLOAD }}"
+
+          echo "$payload"
 
           release="$(jq -r .release <<< "$paylaod")"
           candidate="$(jq -r .candidate <<< "$payload")"
