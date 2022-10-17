@@ -1,9 +1,8 @@
 name: "Build and release official distrubutions"
 
 on:
-  # schedule:
-  #   - cron: "*/30 * * * *"
-  push:
+  schedule:
+    - cron: "*/30 * * * *"
 
 # needed_secrets:
 #   - SNAPCRAFT_LOGIN: login credentials for snap store to be able to push the artifact
@@ -20,8 +19,7 @@ jobs:
         run: |
           &> /dev/null command -v jq || sudo apt install jq -y
 
-          payload="${{ env.DELAYED_JOB_PAYLOAD }}"
-          echo "$payload"
+          payload='${{ env.DELAYED_JOB_PAYLOAD }}'
 
           release="$(jq -r .release <<< "$paylaod")"
           candidate="$(jq -r .candidate <<< "$payload")"
@@ -61,7 +59,9 @@ jobs:
 
       - name: Set build version
         working-directory: official/snap
-        run: sed -Ei -r '/^version:/ s/ .+/ $release/' ./snap/snapcraft.yaml
+        run: |
+          pwd
+          sed -Ei -r '/^version:/ s/ .+/ $release/' ./snap/snapcraft.yaml
 
       - name: Build snap
         uses: snapcore/action-build@v1
@@ -88,21 +88,21 @@ jobs:
       - name: Remove snap
         run: sudo snap remove rocketchat-server
 
-      - name: Publish snap to edge channel
-        uses: snapcore/action-publish@v1
-        with:
-          store_login: ${{ secrets.SNAPCRAFT_LOGIN }}
-          snap: ${{ env.snap_artifact_path }}
-          release: ${{ env.snap_track }}/edge
+      # - name: Publish snap to edge channel
+      #   uses: snapcore/action-publish@v1
+      #   with:
+      #     store_login: ${{ secrets.SNAPCRAFT_LOGIN }}
+      #     snap: ${{ env.snap_artifact_path }}
+      #     release: ${{ env.snap_track }}/edge
 
       - name: Test snap updating
         run: ./test_scripts/snap_update_test.sh
 
-      - name: Promote edge to candidate
-        if: env.candidate == 'true'
-        run: |
-          # TODO change this to using the environment variable
-          echo "${{ secrets.SNAPCRAFT_LOGIN }}" | snapcraft login --with -
-          revision=$(snapcraft list-revisions rocketchat-server --arch amd64 | awk "/$snap_track\/edge/ { print \$1; exit; }")
-          snapcraft release rocketchat-server $revision $snap_track/candidate
+      # - name: Promote edge to candidate
+      #   if: env.candidate == 'true'
+      #   run: |
+      #     # TODO change this to using the environment variable
+      #     echo "${{ secrets.SNAPCRAFT_LOGIN }}" | snapcraft login --with -
+      #     revision=$(snapcraft list-revisions rocketchat-server --arch amd64 | awk "/$snap_track\/edge/ { print \$1; exit; }")
+      #     snapcraft release rocketchat-server $revision $snap_track/candidate
 
