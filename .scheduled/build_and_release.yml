@@ -1,8 +1,9 @@
 name: "Build and release official distrubutions"
 
 on:
-  schedule:
-    - cron: "*/1 * * * *"
+  # schedule:
+  #   - cron: "*/1 * * * *"
+  push:
 
 # needed_secrets:
 #   - SNAPCRAFT_LOGIN: login credentials for snap store to be able to push the artifact
