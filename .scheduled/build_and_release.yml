@@ -71,7 +71,7 @@ jobs:
         uses: snapcore/action-build@v1
         id: snap-build
         with:
-          path: 'official/snap'
+          path: "official/snap"
           build-info: true
 
       - name: Check correct  snap path
@@ -83,8 +83,8 @@ jobs:
       - name: Clone tests repo
         uses: actions/checkout@v2
         with:
-          repository: '${{ env.TESTS_REPO }}'
-          path: './test_scripts'
+          repository: "${{ env.TESTS_REPO }}"
+          path: "./test_scripts"
 
       - name: Install and test the generated snap
         run: ./test_scripts/snap_install_test.sh "$snap_artifact_path"
@@ -109,4 +109,3 @@ jobs:
       #     echo "${{ secrets.SNAPCRAFT_LOGIN }}" | snapcraft login --with -
       #     revision=$(snapcraft list-revisions rocketchat-server --arch amd64 | awk "/$snap_track\/edge/ { print \$1; exit; }")
       #     snapcraft release rocketchat-server $revision $snap_track/candidate
-
