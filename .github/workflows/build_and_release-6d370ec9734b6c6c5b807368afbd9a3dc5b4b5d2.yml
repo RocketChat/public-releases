@@ -98,3 +98,4 @@ jobs:
         run: sudo snap remove rocketchat-server
       - name: Test snap updating
         run: ./test_scripts/snap_update_test.sh
+
