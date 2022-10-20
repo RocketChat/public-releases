@@ -24,6 +24,7 @@ jobs:
           submodules: false
 
       # check if there is a new Release
+      # check for latest stable, latest candidate
       # fetch the version and send to the other workflow
       - name: Parse new release
         id: parse-environment

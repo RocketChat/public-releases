@@ -65,7 +65,7 @@ jobs:
 
       - name: Set build version
         working-directory: official/snap
-        run: sed -Ei -r '/^version:/ s/ .+/ $release/' ./snap/snapcraft.yaml
+        run: sed -Ei -r "/^version:/ s/ .+/ $release/" ./snap/snapcraft.yaml
 
       - name: Build snap
         uses: snapcore/action-build@v1
