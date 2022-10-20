@@ -30,7 +30,7 @@ jobs:
 
           echo "DELAYED_JOB_PAYLAOD: '$DELAYED_JOB_PAYLOAD'"
 
-          release="$(jq -r .release <<< "$DELAYED_JOB_PEYLAOD")"
+          release="$(jq -r .release <<< "$DELAYED_JOB_PAYLOAD")"
           candidate="$(jq -r .candidate <<< "$DELAYED_JOB_PAYLOAD")"
           echo "release: $release"
           echo "candidate: $candidate"
