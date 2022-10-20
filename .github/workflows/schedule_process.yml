@@ -66,7 +66,7 @@ jobs:
       - name: Update submodules and .RELEASES
         run: |
           git submodule foreach 'git pull --rebase'
-          echo "${{ needs.prebuild.outputs.latest_release }}" >> .RELEASES
+          # echo "${{ needs.prebuild.outputs.latest_release }}" >> .RELEASES
 
       - name: Update repository with new release and build configs
         uses: EndBug/add-and-commit@v7
