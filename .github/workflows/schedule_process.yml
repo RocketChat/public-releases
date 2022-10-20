@@ -4,7 +4,7 @@ name: "Schedule primary build and release workflow"
 on:
   # schedule:
   #   - cron: "00 18 * * *"
-  push: # TODO change this to cron
+  workflow_dispatch:
 
 env:
   TARGET_REPOSITORY: "RocketChat/Rocket.Chat"
@@ -49,9 +49,9 @@ jobs:
             fi
           fi
 
-          [[ $latest_release =~ rc$ ]] && candidate=true || candidate=false
+          [[ $latest_release =~ rc ]] && candidate=true || candidate=false
           echo "candidate=$candidate" >> $GITHUB_OUTPUT
-  
+
   schedule:
     runs-on: ubuntu-latest
     needs: [prebuild]

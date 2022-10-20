@@ -28,10 +28,10 @@ jobs:
         run: |
           &> /dev/null command -v jq || sudo apt install jq -y
 
-          payload='${{ env.DELAYED_JOB_PAYLOAD }}'
+          echo "DELAYED_JOB_PAYLAOD: '$DELAYED_JOB_PAYLOAD'"
 
-          release="$(jq -r .release <<< "$paylaod")"
-          candidate="$(jq -r .candidate <<< "$payload")"
+          release="$(jq -r .release <<< "$DELAYED_JOB_PEYLAOD")"
+          candidate="$(jq -r .candidate <<< "$DELAYED_JOB_PAYLOAD")"
           echo "release: $release"
           echo "candidate: $candidate"
 
