@@ -42,7 +42,7 @@ jobs:
     needs: [process-payload]
     runs-on: ubuntu-latest
     env:
-      TESTS_REPO: "debdutdeb/rocketchat-release-test"
+      TESTS_REPO: "debdutdeb/rocketchat-release-tests"
     steps:
       - name: Parse environment variables
         run: |
