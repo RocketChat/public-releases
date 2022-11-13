@@ -2,6 +2,7 @@
 
 load "../bats-assert/load.bash"
 load "../bats-support/load.bash"
+load "../bats-file/load.bash"
 
 readonly HOST="http://localhost:3000"
 readonly EMAIL="dummy@nonexistent.email"
