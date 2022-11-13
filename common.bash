@@ -19,8 +19,8 @@ wait_for_server() {
 	local counter=0
 
 	until curl --connect-timeout 5 --output /dev/null --silent --head --fail $HOST; do
-		assert_not_equal "$counter" "$max_attempts"
-		((counter++))
+		((counter >= max_attempts)) && fail "timeout reached, couldn't connect to Rocket.Chat"
+		counter=$((counter + 1))
 		sleep 1
 	done
 }

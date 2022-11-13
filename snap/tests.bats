@@ -83,7 +83,6 @@ load "../common.bash"
 }
 
 teardown_file() {
-	echo "# Removing backup file and installed snap" >&3
+	echo "# Removing backup file" >&3
 	rm -f /tmp/rocketchat.backup.tar.gz
-	sudo snap remove rocketchat-server
 }
