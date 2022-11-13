@@ -2,6 +2,8 @@
 
 load "../common.bash"
 
+bats_require_minimum_version 1.5.0
+
 setup_file() {
 	export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/x86_64-linux-gnu:/snap/core20/current/usr/lib/x86_64-linux-gnu"
 }
@@ -90,9 +92,9 @@ setup_file() {
 
 # bats test_tags=post
 @test "Should start successfully once new mongo-*urls are set" {
-	run sudo snap set rocketchat-server 'mongo-url=mongodb://localhost:27018/parties?replicaSet=rs0'
+	run sudo snap set rocketchat-server 'mongo-url=mongodb://localhost:27018/parties'
 	assert_success
-	run sudo snap set rocketchat-server 'mongo-oplog-url=mongodb://localhost:27018/local?replicaSet=rs0'
+	run sudo snap set rocketchat-server 'mongo-oplog-url=mongodb://localhost:27018/local'
 	assert_success
 	run snap restart rocketchat-server.rocketchat-server
 	assert_success
