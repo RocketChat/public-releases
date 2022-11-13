@@ -30,6 +30,7 @@ setup_file() {
 
 # bats test_tags=post
 @test "Should be able to restore database successfully" {
+	skip
 	run rocketchat-server.restoredb /tmp/rocketchat.backup.tar.gz
 	assert_success
 }
