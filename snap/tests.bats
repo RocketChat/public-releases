@@ -2,6 +2,10 @@
 
 load "../common.bash"
 
+setup_file() {
+	export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/x86_64-linux-gnu:/snap/core20/current/usr/lib/x86_64-linux-gnu"
+}
+
 # bats test_tags=pre
 @test "Should install previous stable version" {
 	run sudo snap install rocketchat-server --stable
