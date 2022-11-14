@@ -146,5 +146,5 @@ find_last_stable_version() {
 @test "Server should start up successfully with default config" {
 	run docker compose up -d
 	assert_success
-	wait_for_server
+	ROCKETCHAT_MAX_ATTEMPTS=200 wait_for_server
 }

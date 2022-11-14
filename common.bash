@@ -15,7 +15,7 @@ api() {
 }
 
 wait_for_server() {
-	local max_attempts=50
+	local max_attempts="${ROCKETCHAT_MAX_ATTEMPTS:-50}"
 	local counter=0
 
 	until curl --connect-timeout 5 --output /dev/null --silent --head --fail $HOST; do
