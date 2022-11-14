@@ -151,6 +151,10 @@ _is_number() {
 	[[ "$1" =~ ^[0-9]+$ ]]
 }
 
+_needs_square_brackets() {
+	! [[ "$1" =~ ^[a-zA-Z_-]+$ ]]
+}
+
 assert_field_equal() {
 	local to_check="${@: -1}"
 	local check_string=
@@ -158,6 +162,10 @@ assert_field_equal() {
 	for arg in "$@"; do
 		if _is_number "$arg"; then
 			check_string+="[$arg]"
+			continue
+		fi
+		if _needs_square_brackets "$arg"; then
+			check_string+="[\"$arg\"]"
 			continue
 		fi
 		check_string+=".${arg}"

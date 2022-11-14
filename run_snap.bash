@@ -1,10 +1,6 @@
 #!/bin/bash
 
-bats() {
-	local tags="$1"
-	shift
-	./bats-core/bin/bats -T --print-output-on-failure --filter-tags "$tags" "$@"
-}
+source _.bash
 
 sudo apt install jq jo -y
 
