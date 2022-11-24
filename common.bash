@@ -6,7 +6,7 @@ load "../bats-file/load.bash"
 
 readonly HOST="http://localhost:3000"
 readonly EMAIL="dummy@nonexistent.email"
-readonly NAME="Dummy User"
+readonly REALNAME="Dummy User"
 readonly USERNAME="dummy.user"
 readonly PASSWORD="dummypassword1234"
 
@@ -134,7 +134,7 @@ post() {
 }
 
 register() {
-	post users.register username="$USERNAME" email="$EMAIL" pass="$PASSWORD" name="$NAME"
+	post users.register username="$USERNAME" email="$EMAIL" pass="$PASSWORD" name="$REALNAME"
 }
 
 login() {
@@ -179,4 +179,14 @@ assert_field_equal_raw() {
 
 assert_api_success() {
 	assert [[ "$(jq .success -r <<<"$output")" == 'true' ]] || [[ "$(jq .status -r <<<"$output")" == 'success' ]]
+}
+
+run_and_assert_success() {
+	run "$@"
+	assert_success
+}
+
+run_and_assert_failure() {
+	run "$@"
+	assert_failure
 }
