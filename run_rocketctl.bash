@@ -2,4 +2,4 @@
 
 source _.bash
 
-bats rocketctl/mongodb.bats
+bats rocketctl/rocketchat.bats
