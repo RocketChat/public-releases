@@ -79,5 +79,5 @@ setup_file() {
 @test "Should download rocketchat archive fine" {
 	refresh_state
 	run_and_assert_success _download_rocketchat /tmp
-	assert_file_exists "/tmp/$(_get_archive_file_name)"
+	assert_file_exists "/tmp/$(_get_archive_filename)"
 }
