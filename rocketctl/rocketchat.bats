@@ -62,12 +62,10 @@ setup_file() {
 }
 
 @test "Should verify releases right" {
-	verify_release 4.9.0
-	assert [ "$?" -eq 1 ]
+	run_and_assert_failure verify_release 4.9.0
 	verify_release 5.0.0
-	assert [ "$?" -eq 0 ]
-	assert_not_empty "$__RELEASE_INFO_JSON"
-	assert_not_empty "$__COMPATIBLE_MONGODB_VERSIONS_JSON"
+	refute [ -z "$__RELEASE_INFO_JSON" ]
+	refute [ -z "$__COMPATIBLE_MONGODB_VERSIONS_JSON" ]
 	run printf "$__RELEASE_INFO_JSON"
 	assert_field_equal tag 5.0.0
 	assert_field_equal commit 59cae121081e16ed80c9b65db7c6c235a096d043
@@ -80,4 +78,5 @@ setup_file() {
 
 @test "Should download rocketchat archive fine" {
 	refresh_state
+	run_and_assert_success _download_roketchat /tmp
 }
