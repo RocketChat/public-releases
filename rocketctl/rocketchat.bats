@@ -71,12 +71,13 @@ setup_file() {
 	assert_field_equal commit 59cae121081e16ed80c9b65db7c6c235a096d043
 	assert_field_equal key "build/rocket.chat-5.0.0.tgz"
 	assert_field_equal nodeVersion 14.19.3
-	printf >"$__state_file" "%s=%s\n%s=%s" \
+	printf >"$__state_file" "export %s='%s'\nexport %s='%s'" \
 		"__RELEASE_INFO_JSON" "$__RELEASE_INFO_JSON" \
 		"__COMPATIBLE_MONGODB_VERSIONS_JSON" "$__COMPATIBLE_MONGODB_VERSIONS_JSON"
 }
 
 @test "Should download rocketchat archive fine" {
 	refresh_state
-	run_and_assert_success _download_roketchat /tmp
+	run_and_assert_success _download_rocketchat /tmp
+	assert_file_exists "/tmp/$(_get_archive_file_name)"
 }
