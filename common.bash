@@ -178,7 +178,7 @@ assert_field_equal_raw() {
 }
 
 assert_api_success() {
-	assert [[ "$(jq .success -r <<<"$output")" == 'true' ]] || [[ "$(jq .status -r <<<"$output")" == 'success' ]]
+	assert [ "$(jq .success -r <<<"$output")" = 'true' -o "$(jq .status -r <<<"$output")" = 'success' ]
 }
 
 run_and_assert_success() {
