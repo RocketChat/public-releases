@@ -1,9 +1,9 @@
 [submodule "official/snap"]
 	path = official/snap
 	url = https://github.com/RocketChat/rocketchat-server-snap
-[submodule "official/docker-compose"]
-	path = official/docker-compose
-	url = https://github.com/RocketChat/Docker.Official.Image
 [submodule "official/marketplace-do-aws"]
 	path = official/marketplace-do-aws
 	url = https://github.com/RocketChat/rocketchat-packer
+[submodule "official/docker-compose"]
+	path = official/docker-compose
+	url = https://github.com/debdutdeb/rocket.chat.tests

@@ -1,0 +1,82 @@
+name: Trigger all release processes
+
+on:
+  repository_dispatch:
+    types:
+      - new_release
+  workflow_dispatch:
+
+
+jobs:
+  Prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.prepare.outputs.tag }}
+    steps:
+      - id: prepare
+        name: Pass the right tag depending on the event
+        run: |
+          event=${{ github.event_name }}
+          if [[ $event == "workflow_dispatch" ]]; then
+            latest_stable=$(curl -s https://releases.rocket.chat/stable/info | jq .tag -r)
+            [[ -n "$latest_stable" ]] && echo "tag=$latest_stable" >>$GITHUB_OUTPUT
+          else
+            echo "tag=${{ github.event.client_payload.tag }}"
+          fi
+
+  Snap:
+    runs-on: ubuntu-latest
+    needs:
+      - Prepare
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Pull all submodules
+        run: git submodule foreach 'git submodule update --init'
+
+      - name: Release new snap version
+        uses: ./official/snap
+        with:
+          tag: ${{ needs.Prepare.outputs.tag }}
+          github-token: ${{ secrets.GH_TOKEN_PERSONAL }}
+          snapcraft-credential: ${{ secrets.SNAPCRAFT_CREDENTIAL }}
+
+  DockerCompose:
+    runs-on: ubuntu-latest
+    needs:
+      - Prepare
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Pull all submodules
+        run: git submodule foreach 'git submodule update --init'
+
+      - name: Test compose template against new version
+        working-directory: official/docker-compose
+        run: |
+          sudo apt install jo -y
+          export ROCKETCHAT_TAG=${{ needs.Prepare.outputs.tag }}
+          ./run_docker.bash
+
+  Marketplace:
+    runs-on: ubuntu-latest
+    needs:
+      - Prepare
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Pull all submodules
+        run: git submodule foreach 'git submodule update --init'
+

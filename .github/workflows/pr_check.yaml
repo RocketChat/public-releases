@@ -1,0 +1,23 @@
+name: Check if set repository exists or not
+
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+    
+
+jobs:
+  validate-repository:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v3
+
+      - name: Check repository
+        shell: bash
+        run: |
+          repository=$(jq '.distributions | last' unofficial.json | jq .repository -r)
+          echo "repository: $repository"
+          git ls-remote $repository >/dev/null
