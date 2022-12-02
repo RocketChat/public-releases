@@ -81,3 +81,17 @@ setup_file() {
 	run_and_assert_success _download_rocketchat /tmp
 	assert_file_exists "/tmp/$(_get_archive_filename)"
 }
+
+@test "Should install RocketChat successfully" {
+	refresh_state
+	run_and_assert_success _install_nvm /opt/nvm
+	export _BASH_ENV="/opt/nvm/nvm.sh"
+	run_and_assert_success --separate-stderr _nvm_install_nodejs "$(get_required_node_version)" # arbitrary version string
+	path_append "${lines[$((${#lines[@]} - 1))]}"
+	run_and_assert_success install_rocketchat /opt
+}
+
+teardown_file() {
+	refresh_state
+	rm -f "$(_get_archive_filename)" "$__state_file"
+}
