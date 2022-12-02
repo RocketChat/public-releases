@@ -4,7 +4,7 @@ load "../bats-assert/load.bash"
 load "../bats-support/load.bash"
 load "../bats-file/load.bash"
 
-readonly HOST="http://localhost:3000"
+readonly HOST="${ROCKETCHAT_HOST:-http://localhost:3000}"
 readonly EMAIL="dummy@nonexistent.email"
 readonly REALNAME="Dummy User"
 readonly USERNAME="dummy.user"
