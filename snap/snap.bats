@@ -16,7 +16,7 @@ setup_file() {
 
 # bats test_tags=pre
 @test "Should upgrade successfully to new snap dangerously" {
-	assert_not_equal "$ROCKETCHAT_SNAP"
+	refute [ -z "$ROCKETCHAT_SNAP" ]
 	run sudo snap install "$ROCKETCHAT_SNAP" --dangerous
 	assert_success
 }
