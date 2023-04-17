@@ -27,7 +27,8 @@ setup_file() {
 	assert_success
 	local backup_file="$(awk '{ print $NF }' <<<"${lines[$((${#lines[@]} - 1))]}")"
 	assert_file_exists "$backup_file"
-	mv "$backup_file" /tmp/rocketchat.backup.tar.gz
+	run sudo mv "$backup_file" /tmp/rocketchat.backup.tar.gz
+	assert_success
 }
 
 # bats test_tags=post
@@ -103,6 +104,6 @@ setup_file() {
 
 teardown_file() {
 	echo "# Removing backup file" >&3
-	rm -f /tmp/rocketchat.backup.tar.gz
-	sudo snap remove rocketchat-server
+	# rm -f /tmp/rocketchat.backup.tar.gz
+	# sudo snap remove rocketchat-server
 }
