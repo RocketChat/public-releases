@@ -23,7 +23,7 @@ setup_file() {
 
 # bats test_tags=post
 @test "Should back up db successfully" {
-	run --separate-stderr rocketchat-server.backupdb
+	run --separate-stderr sudo rocketchat-server.backupdb
 	assert_success
 	local backup_file="$(awk '{ print $NF }' <<<"${lines[$((${#lines[@]} - 1))]}")"
 	assert_file_exists "$backup_file"
@@ -82,7 +82,7 @@ setup_file() {
 	assert_field_equal acknowledged 'true'
 	assert_field_equal matchedCount 1
 	assert_field_equal modifiedCount 1
-	run snap restart rocketchat-server.rocketchat-mongo
+	run sudo snap restart rocketchat-server.rocketchat-mongo
 	assert_success
 	run --separate-stderr /snap/rocketchat-server/current/bin/mongo --port 27018 --quiet --eval \
 		'db.runCommand({ ping: 1 }).ok'
@@ -104,4 +104,5 @@ setup_file() {
 teardown_file() {
 	echo "# Removing backup file" >&3
 	rm -f /tmp/rocketchat.backup.tar.gz
+	sudo snap remove rocketchat-server
 }
