@@ -10,3 +10,6 @@
 [submodule "bats-file"]
 	path = bats-file
 	url = https://github.com/bats-core/bats-file
+[submodule "bats-detik"]
+	path = bats-detik
+	url = https://github.com/bats-core/bats-detik
