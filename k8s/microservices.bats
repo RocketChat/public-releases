@@ -13,6 +13,9 @@ export DETIK_CLIENT_NAMESPACE="helm-bats-microservices"
 setup_file() {
 	export DEPLOYMENT_NAME="${DEPLOYMENT_NAME:-helm-bats}"
 	export ROCKETCHAT_HOST="${ROCKETCHAT_HOST:-bats.rocket.chat}"
+	export ROCKETCHAT_TAG
+	export ROCKETCHAT_CHART_DIR
+	export ROCKETCHAT_CHART_ARCHIVE="${ROCKETCHAT_CHART_DIR%/}/rocketchat-${ROCKETCHAT_TAG}.tgz"
 }
 
 # bats test_tags=pre
@@ -45,8 +48,8 @@ setup_file() {
 	if [[ -f "./rocketchat-${ROCKETCHAT_TAG}.tgz" ]]; then
 		skip "chart package already exists"
 	fi
-	run_and_assert_success helm package ./rocketchat
-	assert [ -f "./rocketchat-${ROCKETCHAT_TAG}.tgz" ]
+	run_and_assert_success helm package "$ROCKETCHAT_CHART_DIR" -d "$ROCKETCHAT_CHART_DIR"
+	assert [ -f "$ROCKETCHAT_CHART_ARCHIVE" ]
 }
 
 # bats test_tags=post
@@ -68,6 +71,7 @@ setup_file() {
 # bats test_tags=post
 @test "verify upgrade to local chart" {
 	run_and_assert_success helm upgrade "$DEPLOYMENT_NAME" --namespace "$DETIK_CLIENT_NAMESPACE" \
+		--set "image.tag=$ROCKETCHAT_TAG" \
 		--set "microservices.enabled=true" \
 		--set "mongodb.auth.rootPassword=root" \
 		--set "mongodb.auth.passwords={rocketchat}" \
@@ -77,12 +81,13 @@ setup_file() {
 		--set "prometheusScraping.enabled=true" \
 		--set "prometheusScraping.port=9148" \
 		--set "host=$ROCKETCHAT_HOST" \
-		"./rocketchat-${ROCKETCHAT_TAG}.tgz"
+		"$ROCKETCHAT_CHART_ARCHIVE"
 }
 
 # bats test_tags=pre
 @test "verify the chart actually installs" {
 	run_and_assert_success helm install "$DEPLOYMENT_NAME" --namespace "$DETIK_CLIENT_NAMESPACE" --create-namespace \
+		--set "image.tag=$ROCKETCHAT_TAG"
 		--set "microservices.enabled=true" \
 		--set "mongodb.auth.rootPassword=root" \
 		--set "mongodb.auth.passwords={rocketchat}" \
@@ -92,7 +97,7 @@ setup_file() {
 		--set "prometheusScraping.enabled=true" \
 		--set "prometheusScraping.port=9148" \
 		--set "host=$ROCKETCHAT_HOST" \
-		"./rocketchat-${ROCKETCHAT_TAG}.tgz"
+		"$ROCKETCHAT_CHART_ARCHIVE"
 }
 
 # bats test_tags=pre,post
@@ -310,4 +315,3 @@ setup_file() {
 	run_and_assert_success helm uninstall "$DEPLOYMENT_NAME" -n "$DETIK_CLIENT_NAMESPACE"
 	run_and_assert_success kubectl delete namespace "$DETIK_CLIENT_NAMESPACE"
 }
-
