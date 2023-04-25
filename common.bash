@@ -4,7 +4,7 @@ load "../bats-assert/load.bash"
 load "../bats-support/load.bash"
 load "../bats-file/load.bash"
 
-readonly HOST="${ROCKETCHAT_HOST:-http://localhost:3000}"
+readonly HOST="${ROCKETCHAT_URL:-http://localhost:3000}"
 readonly EMAIL="dummy@nonexistent.email"
 readonly REALNAME="Dummy User"
 readonly USERNAME="dummy.user"
@@ -12,6 +12,14 @@ readonly PASSWORD="dummypassword1234"
 
 api() {
 	printf "$HOST/api/v1/%s" "${1?path required}"
+}
+
+curl() {
+	local host_args=()
+	if [[ -n "${ROCKETCHAT_HOST:-}" ]]; then
+		host_args=(-H "HOST: $ROCKETCHAT_HOST")
+	fi
+	command curl "${host_args[@]}" "$@"
 }
 
 wait_for_server() {
@@ -190,3 +198,4 @@ run_and_assert_failure() {
 	run "$@"
 	assert_failure
 }
+
