@@ -35,7 +35,7 @@ setup_file() {
 @test "verify chart --dry-run" {
 	run_and_assert_success bash -c "
 		helm template $ROCKETCHAT_CHART_DIR \
-			--set 'image.tag=$ROCKETCHAT_TAG'
+			--set 'image.tag=$ROCKETCHAT_TAG' \
 			--set 'mongodb.auth.rootPassword=root' \
 			--set 'mongodb.auth.passwords={rocketchat}' \
 			--set 'mongodb.auth.usernames={rocketchat}' \
