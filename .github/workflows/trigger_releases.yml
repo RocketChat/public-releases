@@ -36,21 +36,21 @@ jobs:
       snapcraft-credential: ${{ secrets.SNAPCRAFT_CREDENTIAL }}
       github-token: ${{ secrets.GH_PERSONAL_TOKEN }}
 
-  packer-run:
-    needs:
-      - prepare
-    uses: "RocketChat/rocketchat-packer/.github/workflows/build_images.yml@main"
-    with:
-      tag: ${{ needs.prepare.outputs.tag }}
-    secrets:
-      aws-key-id: ${{ secrets.AWS_KEY_ID }}
-      aws-secret-key: ${{ secrets.AWS_SECRET_KEY }}
-      digitalocean-token: ${{ secrets.DIGITALOCEAN_TOKEN }}
-      github-token: ${{ secrets.GH_PERSONAL_TOKEN }}
-
-  helm-run:
-    needs:
-      - prepare
-    uses: "RocketChat/helm-charts/.github/workflows/release-helm.yml@master"
-    with:
-      tag: ${{ needs.prepare.outputs.tag }}
+  # packer-run:
+  #   needs:
+  #     - prepare
+  #   uses: "RocketChat/rocketchat-packer/.github/workflows/build_images.yml@main"
+  #   with:
+  #     tag: ${{ needs.prepare.outputs.tag }}
+  #   secrets:
+  #     aws-key-id: ${{ secrets.AWS_KEY_ID }}
+  #     aws-secret-key: ${{ secrets.AWS_SECRET_KEY }}
+  #     digitalocean-token: ${{ secrets.DIGITALOCEAN_TOKEN }}
+  #     github-token: ${{ secrets.GH_PERSONAL_TOKEN }}
+  #
+  # helm-run:
+  #   needs:
+  #     - prepare
+  #   uses: "RocketChat/helm-charts/.github/workflows/release-helm.yml@master"
+  #   with:
+  #     tag: ${{ needs.prepare.outputs.tag }}
