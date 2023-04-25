@@ -20,32 +20,33 @@ setup_file() {
 
 # bats test_tags=pre
 @test "verify dependency install" {
-	if [[ -d "rocketchat/charts" ]]; then
+	if [[ -d "${ROCKETCHAT_CHART_DIR%/}/charts" ]]; then
 		skip "dependencies already downloaded"
 	fi
-	run_and_assert_success helm dependency update ./rocketchat
+	run_and_assert_success helm dependency update "$ROCKETCHAT_CHART_DIR"
 }
 
 # bats test_tags=pre
 @test "lint chart" {
-	run_and_assert_success helm lint ./rocketchat
+	run_and_assert_success helm lint "$ROCKETCHAT_CHART_DIR"
 }
 
 # bats test_tags=pre
 @test "verify chart --dry-run" {
-	run_and_assert_success bash -c '
-		helm template ./rocketchat \
-			--set "mongodb.auth.rootPassword=root" \
-			--set "mongodb.auth.passwords={rocketchat}" \
-			--set "mongodb.auth.usernames={rocketchat}" \
-			--set "mongodb.auth.databases={rocketchat}" \
-			--set "microservices.enabled=true" | kubectl apply --dry-run=client -f -
-	'
+	run_and_assert_success bash -c "
+		helm template $ROCKETCHAT_CHART_DIR \
+			--set 'image.tag=$ROCKETCHAT_TAG'
+			--set 'mongodb.auth.rootPassword=root' \
+			--set 'mongodb.auth.passwords={rocketchat}' \
+			--set 'mongodb.auth.usernames={rocketchat}' \
+			--set 'mongodb.auth.databases={rocketchat}' \
+			--set 'microservices.enabled=true' | kubectl apply --dry-run=client -f -
+	"
 }
 
 # bats test_tags=pre
 @test "verify packaging chart" {
-	if [[ -f "./rocketchat-${ROCKETCHAT_TAG}.tgz" ]]; then
+	if [[ -f "$ROCKETCHAT_CHART_ARCHIVE" ]]; then
 		skip "chart package already exists"
 	fi
 	run_and_assert_success helm package "$ROCKETCHAT_CHART_DIR" -d "$ROCKETCHAT_CHART_DIR"
@@ -87,7 +88,7 @@ setup_file() {
 # bats test_tags=pre
 @test "verify the chart actually installs" {
 	run_and_assert_success helm install "$DEPLOYMENT_NAME" --namespace "$DETIK_CLIENT_NAMESPACE" --create-namespace \
-		--set "image.tag=$ROCKETCHAT_TAG"
+		--set "image.tag=$ROCKETCHAT_TAG" \
 		--set "microservices.enabled=true" \
 		--set "mongodb.auth.rootPassword=root" \
 		--set "mongodb.auth.passwords={rocketchat}" \

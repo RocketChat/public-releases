@@ -13,39 +13,43 @@ export DETIK_CLIENT_NAMESPACE="helm-bats-monolith"
 setup_file() {
 	export DEPLOYMENT_NAME="${DEPLOYMENT_NAME:-helm-bats}"
 	export ROCKETCHAT_HOST="${ROCKETCHAT_HOST:-bats.rocket.chat}"
+	export ROCKETCHAT_TAG
+	export ROCKETCHAT_CHART_DIR
+	export ROCKETCHAT_CHART_ARCHIVE="${ROCKETCHAT_CHART_DIR%/}/rocketchat-${ROCKETCHAT_TAG}.tgz"
 }
 
 # bats test_tags=pre
 @test "verify dependency install" {
-	if [[ -d "rocketchat/charts" ]]; then
+	if [[ -d "${ROCKETCHAT_CHART_DIR%/}/charts" ]]; then
 		skip "dependencies already downloaded"
 	fi
-	run_and_assert_success helm dependency update ./rocketchat
+	run_and_assert_success helm dependency update "$ROCKETCHAT_CHART_DIR"
 }
 
 # bats test_tags=pre
 @test "lint chart" {
-	run_and_assert_success helm lint ./rocketchat
+	run_and_assert_success helm lint "$ROCKETCHAT_CHART_DIR"
 }
 
 # bats test_tags=pre
 @test "verify chart --dry-run" {
-	run_and_assert_success bash -c '
-		helm template ./rocketchat \
-			--set "mongodb.auth.rootPassword=root" \
-			--set "mongodb.auth.passwords={rocketchat}" \
-			--set "mongodb.auth.usernames={rocketchat}" \
-			--set "mongodb.auth.databases={rocketchat}" | kubectl apply --dry-run=client -f -
-	'
+	run_and_assert_success bash -c "
+		helm template $ROCKETCHAT_CHART_DIR \
+			--set 'image.tag=$ROCKETCHAT_TAG'
+			--set 'mongodb.auth.rootPassword=root' \
+			--set 'mongodb.auth.passwords={rocketchat}' \
+			--set 'mongodb.auth.usernames={rocketchat}' \
+			--set 'mongodb.auth.databases={rocketchat}' | kubectl apply --dry-run=client -f -
+	"
 }
 
 # bats test_tags=pre
 @test "verify packaging chart" {
-	if [[ -f "./rocketchat-${ROCKETCHAT_TAG}.tgz" ]]; then
+	if [[ -f "$ROCKETCHAT_CHART_ARCHIVE" ]]; then
 		skip "chart package already exists"
 	fi
-	run_and_assert_success helm package ./rocketchat
-	assert [ -f "./rocketchat-${ROCKETCHAT_TAG}.tgz" ]
+	run_and_assert_success helm package "$ROCKETCHAT_CHART_DIR" -d "$ROCKETCHAT_CHART_DIR"
+	assert [ -f "$ROCKETCHAT_CHART_ARCHIVE" ]
 }
 
 # bats test_tags=post
@@ -66,6 +70,7 @@ setup_file() {
 # bats test_tags=post
 @test "verify upgrade to local chart" {
 	run_and_assert_success helm upgrade "$DEPLOYMENT_NAME" --namespace "$DETIK_CLIENT_NAMESPACE" \
+		--set "image.tag=$ROCKETCHAT_TAG" \
 		--set "mongodb.auth.rootPassword=root" \
 		--set "mongodb.auth.passwords={rocketchat}" \
 		--set "mongodb.auth.usernames={rocketchat}" \
@@ -74,12 +79,13 @@ setup_file() {
 		--set "prometheusScraping.enabled=true" \
 		--set "prometheusScraping.port=9148" \
 		--set "host=$ROCKETCHAT_HOST" \
-		"./rocketchat-${ROCKETCHAT_TAG}.tgz"
+		"$ROCKETCHAT_CHART_ARCHIVE"
 }
 
 # bats test_tags=pre
 @test "verify the chart actually installs" {
 	run_and_assert_success helm install "$DEPLOYMENT_NAME" --namespace "$DETIK_CLIENT_NAMESPACE" --create-namespace \
+		--set "image.tag=$ROCKETCHAT_TAG" \
 		--set "mongodb.auth.rootPassword=root" \
 		--set "mongodb.auth.passwords={rocketchat}" \
 		--set "mongodb.auth.usernames={rocketchat}" \
@@ -88,7 +94,7 @@ setup_file() {
 		--set "prometheusScraping.enabled=true" \
 		--set "prometheusScraping.port=9148" \
 		--set "host=$ROCKETCHAT_HOST" \
-		"./rocketchat-${ROCKETCHAT_TAG}.tgz"
+		"$ROCKETCHAT_CHART_ARCHIVE"
 }
 
 # bats test_tags=pre,post
