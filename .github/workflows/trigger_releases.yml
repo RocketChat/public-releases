@@ -6,9 +6,8 @@ on:
       - new_release
   workflow_dispatch:
 
-
 jobs:
-  Prepare:
+  prepare:
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.prepare.outputs.tag }}
@@ -18,65 +17,41 @@ jobs:
         run: |
           event=${{ github.event_name }}
           if [[ $event == "workflow_dispatch" ]]; then
-            latest_stable=$(curl -s https://releases.rocket.chat/stable/info | jq .tag -r)
-            [[ -n "$latest_stable" ]] && echo "tag=$latest_stable" >>$GITHUB_OUTPUT
+            tag=$(curl -s https://releases.rocket.chat/stable/info | jq .tag -r)
           else
-            echo "tag=${{ github.event.client_payload.tag }}"
+            tag=${{ github.event.client_payload.tag }}
           fi
+          echo "tag: $tag"
+          # for now we skip all release candidates
+          grep -Eq 'rc$' <<<"$tag" && exit 1
+          [[ -n "$tag" ]] && echo "tag=$tag" >>$GITHUB_OUTPUT # else intentional fail
 
-  Snap:
-    runs-on: ubuntu-latest
+  snap-run:
     needs:
-      - Prepare
+      - prepare
+    uses: "RocketChat/rocketchat-server-snap/.github/workflows/build_and_release.yml@develop" 
+    with:
+      tag: ${{ needs.prepare.outputs.tag }}
+    secrets:
+      snapcraft-credential: ${{ secrets.SNAPCRAFT_CREDENTIAL }}
+      github-token: ${{ secrets.GH_TOKEN }} # TODO change this
 
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v3
-        with:
-          submodules: true
-
-      - name: Pull all submodules
-        run: git submodule foreach 'git submodule update --init'
-
-      - name: Release new snap version
-        uses: ./official/snap
-        with:
-          tag: ${{ needs.Prepare.outputs.tag }}
-          github-token: ${{ secrets.GH_TOKEN_PERSONAL }}
-          snapcraft-credential: ${{ secrets.SNAPCRAFT_CREDENTIAL }}
-
-  DockerCompose:
-    runs-on: ubuntu-latest
+  packer-run:
     needs:
-      - Prepare
-
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v3
-        with:
-          submodules: true
-
-      - name: Pull all submodules
-        run: git submodule foreach 'git submodule update --init'
-
-      - name: Test compose template against new version
-        working-directory: official/docker-compose
-        run: |
-          sudo apt install jo -y
-          export ROCKETCHAT_TAG=${{ needs.Prepare.outputs.tag }}
-          ./run_docker.bash
-
-  Marketplace:
-    runs-on: ubuntu-latest
+      - prepare
+    uses: "RocketChat/rocketchat-packer/.github/workflows/build_images.yml@main"
+    with:
+      tag: ${{ needs.prepare.outputs.tag }}
+    secrets:
+      aws-key-id: ${{ secrets.AWS_KEY_ID }}
+      aws-secret-key: ${{ secrets.AWS_SECRET_KEY }}
+      digitalocean-token: ${{ secrets.DIGITALOCEAN_TOKEN }}
+      github-token: ${{ secrets.GH_TOKEN }}
+        
+  helm-run:
     needs:
-      - Prepare
-
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v3
-        with:
-          submodules: true
-
-      - name: Pull all submodules
-        run: git submodule foreach 'git submodule update --init'
+      - prepare
+    uses: "RocketChat/helm-charts/.github/workflows/release-helm.yml@master"
+    with:
+      tag: ${{ needs.prepare.outputs.tag }}
 
