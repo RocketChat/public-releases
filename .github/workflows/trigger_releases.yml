@@ -29,12 +29,12 @@ jobs:
   snap-run:
     needs:
       - prepare
-    uses: "RocketChat/rocketchat-server-snap/.github/workflows/build_and_release.yml@develop" 
+    uses: "RocketChat/rocketchat-server-snap/.github/workflows/build_and_release.yml@develop"
     with:
       tag: ${{ needs.prepare.outputs.tag }}
     secrets:
       snapcraft-credential: ${{ secrets.SNAPCRAFT_CREDENTIAL }}
-      github-token: ${{ secrets.GH_TOKEN }} # TODO change this
+      github-token: ${{ secrets.GH_PERSONAL_TOKEN }}
 
   packer-run:
     needs:
@@ -46,12 +46,11 @@ jobs:
       aws-key-id: ${{ secrets.AWS_KEY_ID }}
       aws-secret-key: ${{ secrets.AWS_SECRET_KEY }}
       digitalocean-token: ${{ secrets.DIGITALOCEAN_TOKEN }}
-      github-token: ${{ secrets.GH_TOKEN }}
-        
+      github-token: ${{ secrets.GH_PERSONAL_TOKEN }}
+
   helm-run:
     needs:
       - prepare
     uses: "RocketChat/helm-charts/.github/workflows/release-helm.yml@master"
     with:
       tag: ${{ needs.prepare.outputs.tag }}
-
