@@ -49,7 +49,7 @@ setup_file() {
 	if [[ -f "$ROCKETCHAT_CHART_ARCHIVE" ]]; then
 		skip "chart package already exists"
 	fi
-	run_and_assert_success helm package "$ROCKETCHAT_CHART_DIR" -d "$ROCKETCHAT_CHART_DIR"
+	run_and_assert_success helm package --app-version "$ROCKETCHAT_TAG" --version "$ROCKETCHAT_TAG" "$ROCKETCHAT_CHART_DIR" -d "$(dirname "$ROCKETCHAT_CHART_ARCHIVE")"
 	assert [ -f "$ROCKETCHAT_CHART_ARCHIVE" ]
 }
 
