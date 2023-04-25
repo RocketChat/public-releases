@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -Eeuo pipefail
+
 source _.bash
 
 bats pre ./snap/snap.bats
