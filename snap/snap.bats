@@ -97,7 +97,7 @@ setup_file() {
 	assert_success
 	run sudo snap set rocketchat-server 'mongo-oplog-url=mongodb://localhost:27018/local'
 	assert_success
-	run snap restart rocketchat-server.rocketchat-server
+	run sudo snap restart rocketchat-server.rocketchat-server
 	assert_success
 	wait_for_server
 }
