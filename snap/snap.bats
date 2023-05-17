@@ -10,7 +10,8 @@ setup_file() {
 
 # bats test_tags=pre
 @test "Should install previous stable version" {
-	run sudo snap install rocketchat-server --stable
+	assert [ -n "$ROCKETCHAT_TAG" ]
+	run sudo snap install rocketchat-server --channel "${ROCKETCHAT_TAG%%.*}.x/stable"
 	assert_success
 }
 
