@@ -57,4 +57,5 @@ jobs:
       tag: ${{ needs.prepare.outputs.tag }}
     secrets:
       github-token: ${{ secrets.GH_PERSONAL_TOKEN }}
+      rocketchat-webhook: ${{ secrets.ROCKETCHAT_WEBHOOK }}
         
