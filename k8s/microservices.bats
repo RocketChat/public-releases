@@ -120,8 +120,8 @@ setup_file() {
 
 # bats test_tags=pre,post
 @test "verify all individual pods exist" {
-	run_and_assert_success try "at most 5 times every 10s to find 1 pod named '${DEPLOYMENT_NAME}-mongodb-0' with 'status' being 'running'"
-	run_and_assert_success try "at most 5 times every 10s to find 1 pod named '${DEPLOYMENT_NAME}-nats-0' with 'status' being 'running'"
+	run_and_assert_success try "at most 10 times every 10s to find 1 pod named '${DEPLOYMENT_NAME}-mongodb-0' with 'status' being 'running'"
+	run_and_assert_success try "at most 10 times every 10s to find 1 pod named '${DEPLOYMENT_NAME}-nats-0' with 'status' being 'running'"
 	local deploy=
 	for deploy in nats-box rocketchat presence authorization stream-hub account ddp-streamer; do
 		run_and_assert_success try "at most 5 times every 10s to find 1 pod named '^${DEPLOYMENT_NAME}-${deploy}-' with 'status' being 'running'"

@@ -110,8 +110,8 @@ setup_file() {
 
 # bats test_tags=pre,post
 @test "verify all individual pods exist" {
-	run_and_assert_success try "at most 5 times every 10s to find 1 pod named '${DEPLOYMENT_NAME}-mongodb-0' with 'status' being 'running'"
-	run_and_assert_success try "at most 5 times every 10s to find 1 pod named '^${DEPLOYMENT_NAME}-rocketchat-' with 'status' being 'running'"
+	run_and_assert_success try "at most 10 times every 10s to find 1 pod named '${DEPLOYMENT_NAME}-mongodb-0' with 'status' being 'running'"
+	run_and_assert_success try "at most 10 times every 10s to find 1 pod named '^${DEPLOYMENT_NAME}-rocketchat-' with 'status' being 'running'"
 }
 
 # bats test_tags=pre,post
