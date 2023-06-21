@@ -27,7 +27,6 @@ jobs:
           [[ -n "$tag" ]] && echo "tag=$tag" >>$GITHUB_OUTPUT # else intentional fail
 
   snap-run:
-    if: false
     needs:
       - prepare
     uses: "RocketChat/rocketchat-server-snap/.github/workflows/build_and_release.yml@develop"
@@ -51,7 +50,6 @@ jobs:
       github-token: ${{ secrets.GH_PERSONAL_TOKEN }}
   
   helm-run:
-    if: false
     needs:
       - prepare
     uses: "RocketChat/helm-charts/.github/workflows/release-helm.yml@master"
