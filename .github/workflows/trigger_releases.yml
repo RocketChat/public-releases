@@ -23,7 +23,7 @@ jobs:
           fi
           echo "tag: $tag"
           # for now we skip all release candidates
-          grep -Eq 'rc$' <<<"$tag" && exit 1
+          grep -Eq 'rc' <<<"$tag" && exit 1
           [[ -n "$tag" ]] && echo "tag=$tag" >>$GITHUB_OUTPUT # else intentional fail
 
   snap-run:
