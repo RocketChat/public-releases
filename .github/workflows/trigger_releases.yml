@@ -28,37 +28,37 @@ jobs:
           echo "tag: $tag"
           [[ -n "$tag" ]] && echo "tag=$tag" >>$GITHUB_OUTPUT # else intentional fail
 
-  snap-run:
-    needs:
-      - prepare
-    uses: "RocketChat/server-snap/.github/workflows/main.yml@develop"
-    with:
-      tag: ${{ needs.prepare.outputs.tag }}
-    secrets:
-      snapcraft-credential: ${{ secrets.SNAPCRAFT_CREDENTIAL }}
-      github-token: ${{ secrets.GH_PERSONAL_TOKEN }}
-
-  packer-run:
-    if: '! contains(needs.prepare.outputs.tag, ''rc'')'
-    needs:
-      - prepare
-    uses: "RocketChat/rocketchat-packer/.github/workflows/build_images.yml@main"
-    with:
-      tag: ${{ needs.prepare.outputs.tag }}
-    secrets:
-      aws-key-id: ${{ secrets.AWS_KEY_ID }}
-      aws-secret-key: ${{ secrets.AWS_SECRET_KEY }}
-      digitalocean-token: ${{ secrets.DIGITALOCEAN_TOKEN }}
-      github-token: ${{ secrets.GH_PERSONAL_TOKEN }}
-  
-  helm-run:
-    needs:
-      - prepare
-    uses: "RocketChat/helm-charts/.github/workflows/main.yml@master"
-    with:
-      tag: ${{ needs.prepare.outputs.tag }}
-    secrets:
-      github-token: ${{ secrets.GH_PERSONAL_TOKEN }}
+  # snap-run:
+  #   needs:
+  #     - prepare
+  #   uses: "RocketChat/server-snap/.github/workflows/main.yml@develop"
+  #   with:
+  #     tag: ${{ needs.prepare.outputs.tag }}
+  #   secrets:
+  #     snapcraft-credential: ${{ secrets.SNAPCRAFT_CREDENTIAL }}
+  #     github-token: ${{ secrets.GH_PERSONAL_TOKEN }}
+  #
+  # packer-run:
+  #   if: '! contains(needs.prepare.outputs.tag, ''rc'')'
+  #   needs:
+  #     - prepare
+  #   uses: "RocketChat/rocketchat-packer/.github/workflows/build_images.yml@main"
+  #   with:
+  #     tag: ${{ needs.prepare.outputs.tag }}
+  #   secrets:
+  #     aws-key-id: ${{ secrets.AWS_KEY_ID }}
+  #     aws-secret-key: ${{ secrets.AWS_SECRET_KEY }}
+  #     digitalocean-token: ${{ secrets.DIGITALOCEAN_TOKEN }}
+  #     github-token: ${{ secrets.GH_PERSONAL_TOKEN }}
+  # 
+  # helm-run:
+  #   needs:
+  #     - prepare
+  #   uses: "RocketChat/helm-charts/.github/workflows/main.yml@master"
+  #   with:
+  #     tag: ${{ needs.prepare.outputs.tag }}
+  #   secrets:
+  #     github-token: ${{ secrets.GH_PERSONAL_TOKEN }}
 
   docker-run:
     needs:
