@@ -39,7 +39,7 @@ jobs:
       github-token: ${{ secrets.GH_PERSONAL_TOKEN }}
 
   packer-run:
-    if: '! contains(needs.prepare.outputs.tag, "rc")'
+    if: '! contains(needs.prepare.outputs.tag, ''rc'')'
     needs:
       - prepare
     uses: "RocketChat/rocketchat-packer/.github/workflows/build_images.yml@main"
