@@ -5,6 +5,10 @@ on:
     types:
       - new_release
   workflow_dispatch:
+    inputs:
+      tag:
+        required: false
+        type: string
 
 jobs:
   prepare:
@@ -22,22 +26,20 @@ jobs:
             tag=${{ github.event.client_payload.tag }}
           fi
           echo "tag: $tag"
-          # for now we skip all release candidates
-          grep -Eq 'rc' <<<"$tag" && exit 1
           [[ -n "$tag" ]] && echo "tag=$tag" >>$GITHUB_OUTPUT # else intentional fail
 
   snap-run:
     needs:
       - prepare
-    uses: "RocketChat/rocketchat-server-snap/.github/workflows/build_and_release.yml@develop"
+    uses: "RocketChat/server-snap/.github/workflows/main.yml@develop"
     with:
       tag: ${{ needs.prepare.outputs.tag }}
     secrets:
       snapcraft-credential: ${{ secrets.SNAPCRAFT_CREDENTIAL }}
       github-token: ${{ secrets.GH_PERSONAL_TOKEN }}
-      rocketchat-webhook: ${{ secrets.ROCKETCHAT_WEBHOOK }}
 
   packer-run:
+    if: ! contains(needs.prepare.outputs.tag, 'rc')
     needs:
       - prepare
     uses: "RocketChat/rocketchat-packer/.github/workflows/build_images.yml@main"
@@ -52,10 +54,26 @@ jobs:
   helm-run:
     needs:
       - prepare
-    uses: "RocketChat/helm-charts/.github/workflows/release-helm.yml@master"
+    uses: "RocketChat/helm-charts/.github/workflows/main.yml@master"
     with:
       tag: ${{ needs.prepare.outputs.tag }}
     secrets:
       github-token: ${{ secrets.GH_PERSONAL_TOKEN }}
-      rocketchat-webhook: ${{ secrets.ROCKETCHAT_WEBHOOK }}
-        
+
+  docker-run:
+    needs:
+      - prepare
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Clone tests repository'
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Run tests
+        shell: bash
+        env:
+          ROCKETCHAT_TAG: ${{ needs.prepare.outputs.tag }}
+        run: |
+          sudo apt-get --no-install-recommends install jo jq -y
+          bash ./run_docker.bash
