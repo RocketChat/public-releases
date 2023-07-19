@@ -10,32 +10,31 @@ bats_require_minimum_version 1.5.0
 # Upgrade from last known version
 # all supported parameters from .env (docker compose config)
 
-# tries to find the last stable release we had in order to try an upgrade test
-find_last_stable_version() {
-	#shellcheck disable=2206
-	local current_version_arr=(${ROCKETCHAT_TAG//./ })
-	local last_stable=
-	for i in $(seq 2 0); do
-		local version_component="${current_version_arr[$i]}"
-		while ((version_component > 0)); do
-			version_component=$((version_component - 1))
-			local attempt=
-			for j in $(seq 0 2); do
-				if ((j == i)); then
-					attempt+=".$version_component"
-					continue
+find_last_version() {
+	local current=(${ROCKETCHAT_TAG//./ })
+	local major="${current[0]}"
+	local minor="${current[1]}"
+	local patch=$((${current[2]} - 1))
+	while ((major >= (major - 1))); do
+		while ((minor >= 0)); do
+			while ((patch >= 0)); do
+				_v="${major}.${minor}.${patch}"
+				if [[ -n "$(curl -s https://releases.rocket.chat/$_v/info | jq -r '.tag // empty')" ]]; then
+					printf "%s" "$_v"
+					return
 				fi
-				attempt+=".${current_version_arr[$j]}"
+				patch=$((patch - 1))
 			done
-			attempt="${attempt%.}"
-			if curl "https://releases.rocket.chat/$attempt/info" --silent | jq -e '.tag' >/dev/null; then
-				last_stable="$attempt"
-				break
-			fi
+			patch=9
+			minor=$((minor - 1))
 		done
-		[[ -n "$last_stable" ]] && break
+		minor=9
+		major=$((major - 1))
 	done
-	echo "$last_stable"
+}
+
+setup_file() {
+	export ROCKETCHAT_LAST_TAG="$(find_last_version)"
 }
 
 @test "Should be a valid compose template" {
@@ -120,7 +119,7 @@ find_last_stable_version() {
 		[MONGODB_REPLICA_SET_NAME]=rocket_rs0
 		[MONGODB_PORT_NUMBER]=27018
 		[MONGODB_INITIAL_PRIMARY_PORT_NUMBER]=27018
-		[RELEASE]=0.0.1
+		[RELEASE]=$ROCKETCHAT_LAST_TAG
 	)
 	for variable in "${!variables[@]}"; do
 		printf "%s=%s\n" "$variable" "${variables[$variable]}" >>.env
@@ -134,7 +133,7 @@ find_last_stable_version() {
 	assert_field_equal services rocketchat environment MONGO_OPLOG_URL "mongodb://mongodb:27018/local?replicaSet=rocket_rs0"
 	assert_field_equal services rocketchat environment PORT "3001"
 	assert_field_equal services rocketchat environment ROOT_URL "http://localhost:80"
-	assert_field_equal services rocketchat image "registry.rocket.chat/rocketchat/rocket.chat:0.0.1"
+	assert_field_equal services rocketchat image "registry.rocket.chat/rocketchat/rocket.chat:$ROCKETCHAT_LAST_TAG"
 	assert_field_equal services rocketchat expose 0 "3001"
 	assert_field_equal services rocketchat ports 0 host_ip '127.0.0.1'
 	assert_field_equal services rocketchat ports 0 target "3001"
@@ -143,8 +142,28 @@ find_last_stable_version() {
 	rm -f .env
 }
 
-@test "Server should start up successfully with default config" {
+@test "Server should start up (last server) successfully with default config" {
+	printf "%s=%s\n" "RELEASE" "$ROCKETCHAT_LAST_TAG" >>.env
 	run docker compose up -d
 	assert_success
 	ROCKETCHAT_MAX_ATTEMPTS=200 wait_for_server
+	echo "# Removing temporary .env file" >&3
+	rm -f .env
+}
+
+@test "Should upgrade to newer version as expected" {
+	printf "%s=%s\n" "RELEASE" "$ROCKETCHAT_TAG" >>.env
+	run_and_assert_success docker compose up -d
+	ROCKETCHAT_MAX_ATTEMPTS=200 wait_for_server
+	# don't remove .env
+}
+
+@test "Should start fine with OVERWRITE_SETTING on an existing setting" {
+	printf "OVERWRITE_SETTING_Site_Url=http://127.0.0.1\n" >>.env
+	run_and_assert_success docker compose up -d --force-recreate
+	ROCKETCHAT_MAX_ATTEMPTS=200 wait_for_server
+}
+
+teardown_file() {
+	rm -f .env
 }
