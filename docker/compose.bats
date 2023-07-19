@@ -79,7 +79,7 @@ setup_file() {
 	assert_field_equal services rocketchat environment ROOT_URL "http://localhost:3000"
 
 	# images
-	assert_field_equal services mongodb image "docker.io/bitnami/mongodb:4.4" # TODO: add assert_field_equal_regex to verify image tags
+	assert_field_equal services mongodb image "docker.io/bitnami/mongodb:5.0" # TODO: add assert_field_equal_regex to verify image tags
 	assert_field_equal services rocketchat image "registry.rocket.chat/rocketchat/rocket.chat:latest"
 
 	# networks
