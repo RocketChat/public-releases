@@ -46,6 +46,7 @@ setup_file() {
 	local project_name=
 	project_name="$(basename "$(pwd)")"
 	project_name="${project_name//./}"
+	project_name="${project_name,,}"
 	run --separate-stderr docker compose -f "$COMPOSE_FILE" config --format json
 	assert_success
 	# name
@@ -142,7 +143,7 @@ setup_file() {
 	rm -f .env
 }
 
-@test "Server should start up (last server) successfully with default config" {
+@test "Server should start up (last version) successfully with default config" {
 	printf "%s=%s\n" "RELEASE" "$ROCKETCHAT_LAST_TAG" >>.env
 	run docker compose -f "$COMPOSE_FILE" up -d
 	assert_success
