@@ -21,7 +21,16 @@ jobs:
         run: |
           event=${{ github.event_name }}
           if [[ $event == "workflow_dispatch" ]]; then
-            tag=$(curl -s https://releases.rocket.chat/stable/info | jq .tag -r)
+            maybe_tag=${{ inputs.tag }}
+            if [[ -n $maybe_tag ]]; then
+              if [[ $maybe_tag =~ ^([0-9]+\.[0-9]+\.[0-9]+)-rc\.[0-9]+$ ]]; then
+                tag=${BASH_REMATCH[1]}
+              else
+                tag=$maybe_tag
+              fi
+            else
+              tag=$(curl -s https://releases.rocket.chat/stable/info | jq .tag -r)
+            fi
           else
             tag=${{ github.event.client_payload.tag }}
           fi
