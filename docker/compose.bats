@@ -11,7 +11,13 @@ bats_require_minimum_version 1.5.0
 # all supported parameters from .env (docker compose config)
 
 find_last_version() {
-	local current=(${ROCKETCHAT_TAG//./ })
+	local version=
+	if [[ $ROCKETCHAT_TAG =~ ^([0-9]+\.[0-9]+\.[0-9]+)-rc\.[0-9]+$ ]]; then
+		version=${BASH_REMATCH[1]}
+	else
+		version=$ROCKETCHAT_TAG
+	fi
+	local current=(${version//./ })
 	local major="${current[0]}"
 	local minor="${current[1]}"
 	local patch=$((${current[2]} - 1))
@@ -35,6 +41,8 @@ find_last_version() {
 
 setup_file() {
 	export ROCKETCHAT_LAST_TAG="$(find_last_version)"
+	echo "last version: $ROCKETCHAT_LAST_TAG" >&3
+	echo "current version: $ROCKETCHAT_TAG" >&3
 }
 
 @test "Should be a valid compose template" {
