@@ -38,7 +38,7 @@ setup_file() {
 }
 
 @test "Should be a valid compose template" {
-	docker compose config -q
+	docker compose -f "$COMPOSE_FILE" config -q
 }
 
 # OOTB one-"click" experience
@@ -46,7 +46,7 @@ setup_file() {
 	local project_name=
 	project_name="$(basename "$(pwd)")"
 	project_name="${project_name//./}"
-	run --separate-stderr docker compose config --format json
+	run --separate-stderr docker compose -f "$COMPOSE_FILE" config --format json
 	assert_success
 	# name
 	assert_field_equal name "$project_name"
@@ -124,7 +124,7 @@ setup_file() {
 	for variable in "${!variables[@]}"; do
 		printf "%s=%s\n" "$variable" "${variables[$variable]}" >>.env
 	done
-	run --separate-stderr docker compose config --format json
+	run --separate-stderr docker compose -f "$COMPOSE_FILE" config --format json
 	assert_success
 	assert_field_equal services mongodb environment MONGODB_INITIAL_PRIMARY_PORT_NUMBER "27018"
 	assert_field_equal services mongodb environment MONGODB_PORT_NUMBER "27018"
@@ -144,7 +144,7 @@ setup_file() {
 
 @test "Server should start up (last server) successfully with default config" {
 	printf "%s=%s\n" "RELEASE" "$ROCKETCHAT_LAST_TAG" >>.env
-	run docker compose up -d
+	run docker compose -f "$COMPOSE_FILE" up -d
 	assert_success
 	ROCKETCHAT_MAX_ATTEMPTS=200 wait_for_server
 	echo "# Removing temporary .env file" >&3
@@ -153,14 +153,14 @@ setup_file() {
 
 @test "Should upgrade to newer version as expected" {
 	printf "%s=%s\n" "RELEASE" "$ROCKETCHAT_TAG" >>.env
-	run_and_assert_success docker compose up -d
+	run_and_assert_success docker compose -f "$COMPOSE_FILE" up -d
 	ROCKETCHAT_MAX_ATTEMPTS=200 wait_for_server
 	# don't remove .env
 }
 
 @test "Should start fine with OVERWRITE_SETTING on an existing setting" {
 	printf "OVERWRITE_SETTING_Site_Url=http://127.0.0.1\n" >>.env
-	run_and_assert_success docker compose up -d --force-recreate
+	run_and_assert_success docker compose -f "$COMPOSE_FILE" up -d --force-recreate
 	ROCKETCHAT_MAX_ATTEMPTS=200 wait_for_server
 }
 

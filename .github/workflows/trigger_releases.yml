@@ -70,10 +70,14 @@ jobs:
         with:
           submodules: true
 
+      - name: Download compose file
+        run: curl -LO https://go.rocket.chat/i/docker-compose.yml
+
       - name: Run tests
         shell: bash
         env:
           ROCKETCHAT_TAG: ${{ needs.prepare.outputs.tag }}
+          COMPOSE_FILE: ${{ github.workspace }}/docker-compose.yml
         run: |
           sudo apt-get --no-install-recommends install jo jq -y
           bash ./run_docker.bash
