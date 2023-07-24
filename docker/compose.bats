@@ -100,8 +100,8 @@ setup_file() {
 	assert_field_equal services mongodb volumes 0 target "/bitnami/mongodb"
 
 	# restart policies
-	assert_field_equal services mongodb restart 'on-failure'
-	assert_field_equal services rocketchat restart 'on-failure'
+	assert_field_equal services mongodb restart 'always'
+	assert_field_equal services rocketchat restart 'always'
 
 	# rest of rocketchat config
 	assert_field_equal services rocketchat depends_on mongodb condition "service_started"
