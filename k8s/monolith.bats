@@ -16,6 +16,7 @@ setup_file() {
 	export ROCKETCHAT_TAG
 	export ROCKETCHAT_CHART_DIR
 	export ROCKETCHAT_CHART_ARCHIVE="${ROCKETCHAT_CHART_DIR%/}/rocketchat-${ROCKETCHAT_TAG}.tgz"
+	export HELM_TAG="${HELM_TAG:-$ROCKETCHAT_TAG}"
 }
 
 # bats test_tags=pre
@@ -48,7 +49,7 @@ setup_file() {
 	if [[ -f "$ROCKETCHAT_CHART_ARCHIVE" ]]; then
 		skip "chart package already exists"
 	fi
-	run_and_assert_success helm package --app-version "$ROCKETCHAT_TAG" --version "$ROCKETCHAT_TAG" "$ROCKETCHAT_CHART_DIR" -d "$(dirname "$ROCKETCHAT_CHART_ARCHIVE")"
+	run_and_assert_success helm package --app-version "$ROCKETCHAT_TAG" --version "$HELM_TAG" "$ROCKETCHAT_CHART_DIR" -d "$(dirname "$ROCKETCHAT_CHART_ARCHIVE")"
 	assert [ -f "$ROCKETCHAT_CHART_ARCHIVE" ]
 }
 
