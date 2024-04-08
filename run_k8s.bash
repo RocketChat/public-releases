@@ -40,6 +40,7 @@ for type in monolith; do
 		exit 1
 	fi
 	export ROCKETCHAT_URL="http://$ip"
+ 	bats 'pre,post' ./api_basic/api.bats
 	bats post k8s/$type.bats
  	kubectl get secrets -A
 done
