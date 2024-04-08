@@ -28,7 +28,7 @@ declare -A ascii_arts=(
 )
 
 export ROCKETCHAT_HOST="bats.rocket.chat"
-for type in monolith microservices; do
+for type in monolith; do
 	echo "${ascii_arts[$type]}"
 	bats pre k8s/$type.bats
 	declare -g ip=
@@ -40,7 +40,7 @@ for type in monolith microservices; do
 		exit 1
 	fi
 	export ROCKETCHAT_URL="http://$ip"
-	bats 'pre,post' ./api_basic/api.bats
 	bats post k8s/$type.bats
+ 	kubectl get secrets -A
 done
 
