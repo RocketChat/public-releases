@@ -15,8 +15,8 @@ setup_file() {
 	export ROCKETCHAT_HOST="${ROCKETCHAT_HOST:-bats.rocket.chat}"
 	export ROCKETCHAT_TAG
 	export ROCKETCHAT_CHART_DIR
-	export ROCKETCHAT_CHART_ARCHIVE="${ROCKETCHAT_CHART_DIR%/}/rocketchat-${ROCKETCHAT_TAG}.tgz"
 	export HELM_TAG="${HELM_TAG:-$ROCKETCHAT_TAG}"
+	export ROCKETCHAT_CHART_ARCHIVE="${ROCKETCHAT_CHART_DIR%/}/rocketchat-${HELM_TAG}.tgz"
 }
 
 # bats test_tags=pre
