@@ -70,6 +70,8 @@ setup_file() {
 
 # bats test_tags=post
 @test "verify upgrade to local chart" {
+	echo $DETIK_CLIENT_NAMESPACE >&3
+	kubectl get secrets -n $DETIK_CLIENT_NAMESPACE >&3
 	run_and_assert_success helm upgrade "$DEPLOYMENT_NAME" --namespace "$DETIK_CLIENT_NAMESPACE" \
 		--set "image.tag=$ROCKETCHAT_TAG" \
 		--set "mongodb.auth.rootPassword=root" \
