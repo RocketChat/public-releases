@@ -35,3 +35,5 @@ for type in monolith; do
  	kubectl get secrets -A
 done
 
+exit 1
+
