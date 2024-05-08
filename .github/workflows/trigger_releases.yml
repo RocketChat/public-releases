@@ -45,7 +45,7 @@ jobs:
     if: '! contains(needs.prepare.outputs.tag, ''rc'')'
     needs:
       - prepare
-    uses: "RocketChat/rocketchat-packer/.github/workflows/build_images.yml@main"
+    uses: "RocketChat/packer-configs/.github/workflows/build_images.yml@main"
     with:
       tag: ${{ needs.prepare.outputs.tag }}
     secrets:
