@@ -12,7 +12,7 @@ export DETIK_CLIENT_NAMESPACE="helm-bats-microservices"
 
 setup_file() {
 	export DEPLOYMENT_NAME="${DEPLOYMENT_NAME:-helm-bats}"
-	export ROCKETCHAT_HOST="${ROCKETCHAT_HOST:-bats.rocket.chat}"
+	export ROCKETCHAT_HOST
 	export ROCKETCHAT_TAG
 	export ROCKETCHAT_CHART_DIR
 	export HELM_TAG="${HELM_TAG:-$ROCKETCHAT_TAG}"
