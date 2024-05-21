@@ -44,7 +44,7 @@ run_test() {
 			: $((fails++))
 		fi
 
-		if ((fails == 10))
+		if ((fails == 10)); then
 			\echo "[ERROR] load balancer IP not found"
 			exit 1
 		fi
