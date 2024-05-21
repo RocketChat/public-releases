@@ -51,7 +51,7 @@ run_test() {
 	bats post k8s/$type.bats
 }
 
-if [[ -n $1 ]]; then
+if [[ -n ${1:-} ]]; then
 	echo "Running only $1 tests"
 	run_test "$1"
 	exit $?
