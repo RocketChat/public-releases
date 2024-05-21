@@ -35,13 +35,22 @@ run_test() {
 	echo "${ascii_arts[$type]}"
 
 	declare -g ip=
-	if ! ip="$(
-		\kubectl -n kube-system get svc traefik \
-			--output "jsonpath={.status.loadBalancer.ingress[0].ip}"
-	)" || [[ -z "$ip" ]]; then
-		\echo "[ERROR] load balancer IP not found"
-		exit 1
-	fi
+	local fails=0
+	while [[ -z $ip ]]; do
+		if ! ip="$(
+			\kubectl -n kube-system get svc traefik \
+				--output "jsonpath={.status.loadBalancer.ingress[0].ip}"
+		)" || [[ -z "$ip" ]]; then
+			: $((fails++))
+		fi
+
+		if ((fails == 10))
+			\echo "[ERROR] load balancer IP not found"
+			exit 1
+		fi
+
+		sleep 10
+	done
 
 	export ROCKETCHAT_URL="http://$ip"
 
