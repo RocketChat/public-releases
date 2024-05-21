@@ -4,10 +4,11 @@ load "../bats-assert/load.bash"
 load "../bats-support/load.bash"
 load "../bats-file/load.bash"
 
+export readonly ROCKETCHAT_HOST=${ROCKETCHAT_HOST:-"bats.rocket.chat"}
 readonly HOST="${ROCKETCHAT_URL:-http://localhost:3000}"
-readonly EMAIL="dummy@nonexistent.email"
-readonly REALNAME="Dummy User"
-readonly USERNAME="dummy.user"
+readonly EMAIL="dummy+$(date +%s)@nonexistent.email"
+readonly REALNAME="Dummy User $(date +%s)"
+readonly USERNAME="dummy.user.$(date +%s)"
 readonly PASSWORD="dummypassword1234"
 
 api() {
@@ -100,6 +101,8 @@ get() {
 		"x-user-id: $USER_ID"
 		-H
 		"content-type: application/json"
+		-H
+		"Host: $ROCKETCHAT_HOST"
 	)
 	local endpoint
 	endpoint="$(api "${1?endpoint required}")"
@@ -124,6 +127,8 @@ post() {
 		"x-user-id: $USER_ID"
 		-H
 		"content-type: application/json"
+		-H
+		"Host: $ROCKETCHAT_HOST"
 	)
 	local endpoint
 	endpoint="$(api "${1?endpoint required}")"
@@ -142,6 +147,8 @@ post() {
 }
 
 register() {
+	echo "# username=\"$USERNAME\" email=\"$EMAIL\" pass=\"$PASSWORD\" name=\"$REALNAME\"" >&3
+
 	post users.register username="$USERNAME" email="$EMAIL" pass="$PASSWORD" name="$REALNAME"
 }
 

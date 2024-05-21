@@ -31,7 +31,7 @@ setup_file() {
 # bats test_tags=post,pre
 @test "Should be able to see user list" {
 	get users.list
-	assert_field_equal total 2
+	assert_field_equal total 2 # TODO help more on repeatable tests
 }
 
 # bats test_tags=post,pre

@@ -28,9 +28,14 @@ declare -A ascii_arts=(
 )
 
 export ROCKETCHAT_HOST="bats.rocket.chat"
-for type in monolith microservices; do
+
+run_test() {
+	local type="${1?}"
+
 	echo "${ascii_arts[$type]}"
+
 	bats pre k8s/$type.bats
+
 	declare -g ip=
 	if ! ip="$(
 		\kubectl -n kube-system get svc traefik \
@@ -39,8 +44,19 @@ for type in monolith microservices; do
 		\echo "[ERROR] load balancer IP not found"
 		exit 1
 	fi
+
 	export ROCKETCHAT_URL="http://$ip"
 	bats 'pre,post' ./api_basic/api.bats
 	bats post k8s/$type.bats
+}
+
+if [[ -n $1 ]]; then
+	echo "Running only $1 tests"
+	run_test "$1"
+	exit $?
+fi
+
+for type in monolith microservices; do
+	run_test $type
 done
 
