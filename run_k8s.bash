@@ -34,8 +34,6 @@ run_test() {
 
 	echo "${ascii_arts[$type]}"
 
-	bats pre k8s/$type.bats
-
 	declare -g ip=
 	if ! ip="$(
 		\kubectl -n kube-system get svc traefik \
@@ -46,6 +44,9 @@ run_test() {
 	fi
 
 	export ROCKETCHAT_URL="http://$ip"
+
+	bats pre k8s/$type.bats
+
 	bats 'pre,post' ./api_basic/api.bats
 	bats post k8s/$type.bats
 }

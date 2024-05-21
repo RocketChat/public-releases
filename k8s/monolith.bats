@@ -13,6 +13,7 @@ export DETIK_CLIENT_NAMESPACE="helm-bats-monolith"
 setup_file() {
 	export DEPLOYMENT_NAME="${DEPLOYMENT_NAME:-helm-bats}"
 	export ROCKETCHAT_HOST
+	export ROCKETCHAT_URL
 	export ROCKETCHAT_TAG
 	export ROCKETCHAT_CHART_DIR
 	export HELM_TAG="${HELM_TAG:-$ROCKETCHAT_TAG}"
@@ -70,6 +71,8 @@ setup_file() {
 		--set "prometheusScraping.port=9148" \
 		--set "host=$ROCKETCHAT_HOST" \
 		--set "federation.enabled=true" \
+		--set "ingress.federation.serveWellKnown=false" \
+		--set "federation.host=synapse.$ROCKETCHAT_HOST" \
 		--repo https://rocketchat.github.io/helm-charts
 }
 
@@ -106,7 +109,9 @@ setup_file() {
 		--set "prometheusScraping.enabled=true" \
 		--set "prometheusScraping.port=9148" \
 		--set "host=$ROCKETCHAT_HOST" \
+		--set "federation.host=synapse.$ROCKETCHAT_HOST" \
 		--set "federation.enabled=true" \
+		--set "ingress.federation.serveWellKnown=false" \
 		"$ROCKETCHAT_CHART_ARCHIVE"
 }
 
@@ -126,7 +131,9 @@ setup_file() {
 		--set "prometheusScraping.enabled=true" \
 		--set "prometheusScraping.port=9148" \
 		--set "federation.enabled=true" \
+		--set "ingress.federation.serveWellKnown=false" \
 		--set "host=$ROCKETCHAT_HOST" \
+		--set "federation.host=synapse.$ROCKETCHAT_HOST" \
 		"$ROCKETCHAT_CHART_ARCHIVE"
 }
 
@@ -176,7 +183,7 @@ setup_file() {
 
 # bats test_tags=pre,post
 @test "verify ingress config" {
-	verify "'.spec.rules[0].host'" is "'$ROCKETCHAT_HOST'" \
+	verify "'.spec.rules[*].host'" matches "'(synapse\.)?$ROCKETCHAT_HOST,(synapse\.)?$ROCKETCHAT_HOST'" \
 		for ingress named "'${DEPLOYMENT_NAME}-rocketchat'"
 
 	verify "'.spec.rules[*].http.paths[*].backend.service.name'" is "'${DEPLOYMENT_NAME}-rocketchat,${DEPLOYMENT_NAME}-rocketchat-synapse'" \
@@ -190,6 +197,15 @@ setup_file() {
 
 	run_and_assert_success verify "'.spec.rules[*].http.paths[*].pathType'" is "'Prefix,Prefix'" \
 		for ingress named "'${DEPLOYMENT_NAME}-rocketchat'"
+}
+
+# bats test_tags=pre,post
+@test "verify well-known response for server" {
+	sleep 30 #this could consider flaky
+
+	run_and_assert_success curl -H "Host: $ROCKETCHAT_HOST" "$ROCKETCHAT_URL/.well-known/matrix/server" -s >&3
+
+	assert_field_equal_raw ".[\"m.server\"]" "synapse.$ROCKETCHAT_HOST:443"
 }
 
 # bats test_tags=pre,post
