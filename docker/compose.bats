@@ -11,6 +11,7 @@ bats_require_minimum_version 1.5.0
 # all supported parameters from .env (docker compose config)
 
 find_last_version() {
+	set -x
 	local version=
 	if [[ $ROCKETCHAT_TAG =~ ^([0-9]+\.[0-9]+\.[0-9]+)-rc\.[0-9]+$ ]]; then
 		version=${BASH_REMATCH[1]}
@@ -37,6 +38,7 @@ find_last_version() {
 		minor=9
 		major=$((major - 1))
 	done
+	set +x
 }
 
 setup_file() {
