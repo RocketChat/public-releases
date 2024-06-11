@@ -11,7 +11,6 @@ bats_require_minimum_version 1.5.0
 # all supported parameters from .env (docker compose config)
 
 find_last_version() {
-	set -x
 	local version=
 	if [[ $ROCKETCHAT_TAG =~ ^([0-9]+\.[0-9]+\.[0-9]+)-rc\.[0-9]+$ ]]; then
 		version=${BASH_REMATCH[1]}
@@ -35,10 +34,13 @@ find_last_version() {
 			patch=9
 			minor=$((minor - 1))
 		done
-		minor=9
+		# FIXME: this whole function is a weird hack that was supposed to break at some point
+		# we can't have a ceiling for minor or patch numbers, that's, wrong.
+		# ...This needs to be better. As 6.10 MIGHT happen, 11 I am putting as a ceiling for now. Likelyhood is very low.
+		# Um but if it breaks again for 6.11 (if it happens), I'll be forced to fix this for real.
+		minor=11
 		major=$((major - 1))
 	done
-	set +x
 }
 
 setup_file() {
