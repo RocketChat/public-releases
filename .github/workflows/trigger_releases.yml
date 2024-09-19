@@ -12,6 +12,7 @@ on:
 
 jobs:
   prepare:
+    if: false
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.prepare.outputs.tag }}
