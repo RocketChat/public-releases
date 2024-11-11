@@ -65,7 +65,7 @@ setup_file() {
 	run sudo snap restart rocketchat-server
 	assert_success
 	wait_for_server
-	run --separate-stderr /snap/rocketchat-server/current/bin/mongo --quiet --eval '
+	run --separate-stderr /snap/rocketchat-server/current/usr/bin/mongosh --quiet --eval '
 		printjson(
 			db.getSiblingDB("parties").rocketchat_settings.findOne({
 				_id: "Accounts_TwoFactorAuthentication_Enabled"
@@ -87,7 +87,7 @@ setup_file() {
 @test "MongoDb should run on changed port via config" {
 	run sudo sed -Ei 's/( +port:) 27017/\1 27018/' /var/snap/rocketchat-server/current/mongod.conf
 	assert_success
-	run --separate-stderr /snap/rocketchat-server/current/bin/mongo --quiet --eval '
+	run --separate-stderr /snap/rocketchat-server/current/usr/bin/mongosh --quiet --eval '
 		config = db.getSiblingDB("local").system.replset.findOne( { "_id": "rs0" } );
 		config.members[0].host = "localhost:27018";
 		db.getSiblingDB("local").system.replset.updateOne( { "_id": "rs0" }, { $set: config } );
@@ -98,7 +98,7 @@ setup_file() {
 	assert_field_equal modifiedCount 1
 	run sudo snap restart rocketchat-server.rocketchat-mongo
 	assert_success
-	run --separate-stderr /snap/rocketchat-server/current/bin/mongo --port 27018 --quiet --eval \
+	run --separate-stderr /snap/rocketchat-server/current/usr/bin/mongosh --port 27018 --quiet --eval \
 		'db.runCommand({ ping: 1 }).ok'
 	assert_success
 	assert_output 1
