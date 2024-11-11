@@ -10,8 +10,15 @@ setup_file() {
 
 # bats test_tags=pre
 @test "Should install previous stable version" {
-	assert [ -n "$ROCKETCHAT_TAG" ]
-	run sudo snap install rocketchat-server --channel "${ROCKETCHAT_TAG%%.*}.x/stable"
+	local channel=
+	if [ -n "$ROCKETCHAT_PREVIOUS_CHANNEL" ]; then
+		channel="$ROCKETCHAT_PREVIOUS_CHANNEL"
+	elif [ -n "$ROCKETCHAT_TAG" ]; then
+		channel="${ROCKETCHAT_TAG%%.*}.x/stable"
+	else
+		fail "either ROCKETCHAT_TAG or ROCKETCHAT_PREVIOUS_CHANNEL must be set"
+	fi
+	run sudo snap install rocketchat-server --channel "$channel"
 	assert_success
 }
 
