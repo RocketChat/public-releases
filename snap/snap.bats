@@ -47,6 +47,11 @@ setup_file() {
 }
 
 # bats test_tags=post
+@test "Should have deno installed" {
+	assert_file_executable "/snap/rocketchat-server/current/bin/deno"
+}
+
+# bats test_tags=post
 @test "Should be able to change settings with *.env files" {
 	echo "OVERWRITE_SETTING_Accounts_TwoFactorAuthentication_Enabled=false" |
 		sudo tee /var/snap/rocketchat-server/common/test.env >/dev/null
