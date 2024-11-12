@@ -66,7 +66,7 @@ setup_file() {
 	assert_success
 	wait_for_server
 	run --separate-stderr /snap/rocketchat-server/current/usr/bin/mongosh --quiet --eval '
-		printjson(
+		print(JSON.stringify(
 			db.getSiblingDB("parties").rocketchat_settings.findOne({
 				_id: "Accounts_TwoFactorAuthentication_Enabled"
 			}, {
@@ -75,7 +75,7 @@ setup_file() {
 				processEnvValue: 1,
 				_id: 0
 			})
-		)
+		))
 	'
 	assert_success
 	assert_field_equal value 'false'
@@ -90,7 +90,7 @@ setup_file() {
 	run --separate-stderr /snap/rocketchat-server/current/usr/bin/mongosh --quiet --eval '
 		config = db.getSiblingDB("local").system.replset.findOne( { "_id": "rs0" } );
 		config.members[0].host = "localhost:27018";
-		db.getSiblingDB("local").system.replset.updateOne( { "_id": "rs0" }, { $set: config } );
+		print(JSON.stringify(db.getSiblingDB("local").system.replset.updateOne( { "_id": "rs0" }, { $set: config } )));
 	'
 	assert_success
 	assert_field_equal acknowledged 'true'
