@@ -87,7 +87,7 @@ setup_file() {
 @test "MongoDb should run on changed port via config" {
 	run sudo sed -Ei 's/( +port:) 27017/\1 27018/' /var/snap/rocketchat-server/current/mongod.conf
 	assert_success
-	run --separate-stderr /snap/rocketchat-server/current/usr/bin/mongosh --quiet --eval '
+	run --separate-stderr /snap/rocketchat-server/current/usr/bin/mongosh 'mongodb://localhost:27017?directConnection=true&retryWrites=false' --quiet --eval '
 		config = db.getSiblingDB("local").system.replset.findOne( { "_id": "rs0" } );
 		config.members[0].host = "localhost:27018";
 		print(JSON.stringify(db.getSiblingDB("local").system.replset.updateOne( { "_id": "rs0" }, { $set: config } )));
