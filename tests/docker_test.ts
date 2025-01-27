@@ -1,8 +1,7 @@
 import { $ } from "bun";
-import { expect, describe, it, beforeAll } from "bun:test";
-import { basename } from "node:path";
+import { beforeAll, describe, expect, it } from "bun:test";
 
-import { assertEnvironmentVariableNotEmpty } from "./helpers";
+import { assertEnvironmentVariableNotEmpty, findLastVersion } from "./helpers";
 
 const { env } = process;
 
@@ -12,14 +11,16 @@ describe("Compose", () => {
   });
 
   it("should be a valid compose file", async () => {
-    try {
-      const { exitCode } =
-        await $`docker compose -f ${process.env.COMPOSE_FILE} config -q`.quiet();
-      expect(exitCode).toBe(0);
-    } catch (e) {
-      console.error(String(e));
-      throw e;
+    const { stderr, exitCode } =
+      await $`docker compose -f ${process.env.COMPOSE_FILE} config -q`
+        .nothrow()
+        .quiet();
+
+    if (exitCode) {
+      console.error(stderr.toString())
     }
+
+    expect(exitCode).toBe(0);
   });
 
   it("should deploy fine with an empty .env", async () => {
@@ -69,5 +70,7 @@ describe("Compose", () => {
     );
 
     await $`echo ${envStr} > .env`;
+    
+    console.log(await findLastVersion())
   });
 });
