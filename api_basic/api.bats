@@ -45,7 +45,7 @@ setup_file() {
 	assert_field_equal messages 0 msg "HelloWorld"
 }
 
-teardown_file() {
-	echo "# Logging out" >&3
-	logout
-}
+#teardown_file() {
+#	echo "# Logging out" >&3
+#	logout
+#}
