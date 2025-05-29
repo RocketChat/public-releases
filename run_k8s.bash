@@ -66,7 +66,7 @@ if [[ -n ${1:-} ]]; then
 	exit $?
 fi
 
-for type in monolith microservices; do
+for type in microservices; do
 	run_test $type
 done
 

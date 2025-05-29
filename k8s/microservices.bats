@@ -109,6 +109,7 @@ setup_file() {
 	for svc in nats rocketchat presence authorization stream-hub account ddp-streamer; do
 		run_and_assert_success verify "there is 1 service named '${DEPLOYMENT_NAME}-${svc}'"
 	done
+	$DETIK_CLIENT_NAME -n $DETIK_CLIENT_NAMESPACE get services >&3
 }
 
 # bats test_tags=pre,post
