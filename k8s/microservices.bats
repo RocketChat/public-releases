@@ -104,12 +104,13 @@ setup_file() {
 
 # bats test_tags=pre,post
 @test "verify all services are up" {
-	$DETIK_CLIENT_NAME -n $DETIK_CLIENT_NAMESPACE get services >&3
 	run_and_assert_success verify "there is 1 service named '${DEPLOYMENT_NAME}-mongodb-headless'"
 	local svc=
-	for svc in nats rocketchat presence authorization stream-hub account ddp-streamer; do
+	for svc in rocketchat presence authorization stream-hub account ddp-streamer; do
 		run_and_assert_success verify "there is 1 service named '${DEPLOYMENT_NAME}-${svc}'"
 	done
+	# chart now manually creates the headless service at the time of installation
+	run_and_assert_success verify "there are 2 services named '${DEPLOYMENT_NAME}-nats'"
 }
 
 # bats test_tags=pre,post
