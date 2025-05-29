@@ -104,12 +104,12 @@ setup_file() {
 
 # bats test_tags=pre,post
 @test "verify all services are up" {
+	$DETIK_CLIENT_NAME -n $DETIK_CLIENT_NAMESPACE get services >&3
 	run_and_assert_success verify "there is 1 service named '${DEPLOYMENT_NAME}-mongodb-headless'"
 	local svc=
 	for svc in nats rocketchat presence authorization stream-hub account ddp-streamer; do
 		run_and_assert_success verify "there is 1 service named '${DEPLOYMENT_NAME}-${svc}'"
 	done
-	$DETIK_CLIENT_NAME -n $DETIK_CLIENT_NAMESPACE get services >&3
 }
 
 # bats test_tags=pre,post
