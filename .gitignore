@@ -1,3 +1,4 @@
 .env
 compose.yml
 Dockerfile
+**/node_modules/

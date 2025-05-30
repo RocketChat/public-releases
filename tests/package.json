@@ -1,0 +1,14 @@
+{
+  "name": "deployment-tests",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "^1.2.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "octokit": "^4.1.0"
+  }
+}
