@@ -39,7 +39,6 @@ setup_file() {
 @test "verify chart --dry-run" {
 	run_and_assert_success bash -c "
 		helm template $ROCKETCHAT_CHART_DIR \
-			--set 'image.tag=$ROCKETCHAT_TAG' \
 			--set 'mongodb.auth.rootPassword=root' \
 			--set 'mongodb.auth.passwords={rocketchat}' \
 			--set 'mongodb.auth.usernames={rocketchat}' \
@@ -100,7 +99,6 @@ setup_file() {
 # bats test_tags=post
 @test "verify upgrade to local chart" {
 	run_and_assert_success helm upgrade "$DEPLOYMENT_NAME" --namespace "$DETIK_CLIENT_NAMESPACE" \
-		--set "image.tag=$ROCKETCHAT_TAG" \
 		--set "mongodb.auth.rootPassword=root" \
 		--set "mongodb.auth.passwords={rocketchat}" \
 		--set "mongodb.auth.usernames={rocketchat}" \
@@ -122,7 +120,6 @@ setup_file() {
 	fi
 
 	run_and_assert_success helm install "$DEPLOYMENT_NAME" --namespace "$DETIK_CLIENT_NAMESPACE" --create-namespace \
-		--set "image.tag=$ROCKETCHAT_TAG" \
 		--set "mongodb.auth.rootPassword=root" \
 		--set "mongodb.auth.passwords={rocketchat}" \
 		--set "mongodb.auth.usernames={rocketchat}" \
