@@ -157,24 +157,24 @@ setup_file() {
 		with "'.subsets[*].ports[*].port'" matching "'9458,3000|3000,9458'"
 
 	run_and_assert_success try at most 5 times every 10s \
-		to find 1 ep named "'${DEPLOYMENT_NAME}-rocketchat'" \
+		to find 1 ep named "'${DEPLOYMENT_NAME}-rocketchat$'" \
 		with "'.subsets[*].ports[*].name'" matching "'metrics'"
 	run_and_assert_success try at most 5 times every 10s \
-		to find 1 ep named "'${DEPLOYMENT_NAME}-rocketchat'" \
+		to find 1 ep named "'${DEPLOYMENT_NAME}-rocketchat$'" \
 		with "'.subsets[*].ports[*].port'" matching "'9148'"
 
 	run_and_assert_success try at most 5 times every 10s \
-		to find 1 ep named "'${DEPLOYMENT_NAME}-rocketchat'" \
+		to find 1 ep named "'${DEPLOYMENT_NAME}-rocketchat$'" \
 		with "'.subsets[*].ports[*].name'" matching "'http'"
 	run_and_assert_success try at most 5 times every 10s \
-		to find 1 ep named "'${DEPLOYMENT_NAME}-rocketchat'" \
+		to find 1 ep named "'${DEPLOYMENT_NAME}-rocketchat$'" \
 		with "'.subsets[*].ports[*].port'" matching "'3000'"
 
 	run_and_assert_success try at most 5 times every 10s \
-		to find 1 ep named "'${DEPLOYMENT_NAME}-rocketchat'" \
+		to find 1 ep named "'${DEPLOYMENT_NAME}-rocketchat$'" \
 		with "'.subsets[*].ports[*].name'" matching "'moleculer-metrics'"
 	run_and_assert_success try at most 5 times every 10s \
-		to find 1 ep named "'${DEPLOYMENT_NAME}-rocketchat'" \
+		to find 1 ep named "'${DEPLOYMENT_NAME}-rocketchat$'" \
 		with "'.subsets[*].ports[*].port'" matching "'9458'"
 
 	# unfortunately can't do it like this, because of how detik gets these informations
