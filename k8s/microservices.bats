@@ -110,7 +110,7 @@ setup_file() {
 		run_and_assert_success verify "there is 1 service named '${DEPLOYMENT_NAME}-${svc}'"
 	done
 	# chart now manually creates the headless service at the time of installation
-	run_and_assert_success verify "there are 3 services named '${DEPLOYMENT_NAME}-nats'"
+	run_and_assert_success verify "there are 1 services named '${DEPLOYMENT_NAME}-nats'"
 }
 
 # bats test_tags=pre,post
