@@ -106,9 +106,10 @@ setup_file() {
 @test "verify all services are up" {
 	run_and_assert_success verify "there is 1 service named '${DEPLOYMENT_NAME}-mongodb-headless'"
 	local svc=
-	for svc in rocketchat presence authorization stream-hub account ddp-streamer; do
+	for svc in presence authorization stream-hub account ddp-streamer; do
 		run_and_assert_success verify "there is 1 service named '${DEPLOYMENT_NAME}-${svc}'"
 	done
+	run_and_assert_success verify "there are 2 service named '${DEPLOYMENT_NAME}-rocketchat'"
 	# chart now manually creates the headless service at the time of installation
 	run_and_assert_success verify "there are 2 services named '${DEPLOYMENT_NAME}-nats'"
 }
